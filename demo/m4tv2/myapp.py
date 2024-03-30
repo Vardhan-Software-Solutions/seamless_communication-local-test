@@ -114,9 +114,8 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
     target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
     out_texts, _ = translator.predict(
         input=input_audio,
-        task_str="S2TT"
-        # ,
-        # src_lang=source_language_code,
+        task_str="S2TT",
+        src_lang=source_language_code,
         tgt_lang=target_language_code,
     )
 
