@@ -91,21 +91,21 @@ def preprocess_audio(input_audio: str) -> None:
     torchaudio.save(input_audio, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
 
 
-def run_s2st(
-    input_audio: str, source_language: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
-    preprocess_audio(input_audio)
-    source_language_code = LANGUAGE_NAME_TO_CODE[source_language]
-    target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
-    out_texts, out_audios = translator.predict(
-        input=input_audio,
-        task_str="S2ST",
-        src_lang=source_language_code,
-        tgt_lang=target_language_code,
-    )
-    out_text = str(out_texts[0])
-    out_wav = out_audios.audio_wavs[0].cpu().detach().numpy()
-    return (int(AUDIO_SAMPLE_RATE), out_wav), out_text
+# def run_s2st(
+#     input_audio: str, source_language: str, target_language: str
+# ) -> tuple[tuple[int, np.ndarray] | None, str]:
+#     preprocess_audio(input_audio)
+#     source_language_code = LANGUAGE_NAME_TO_CODE[source_language]
+#     target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
+#     out_texts, out_audios = translator.predict(
+#         input=input_audio,
+#         task_str="S2ST",
+#         src_lang=source_language_code,
+#         tgt_lang=target_language_code,
+#     )
+#     out_text = str(out_texts[0])
+#     out_wav = out_audios.audio_wavs[0].cpu().detach().numpy()
+#     return (int(AUDIO_SAMPLE_RATE), out_wav), out_text
 
 
 def run_s2tt(input_audio: str, source_language: str, target_language: str) -> str:
@@ -114,8 +114,9 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
     target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
     out_texts, _ = translator.predict(
         input=input_audio,
-        task_str="S2TT",
-        src_lang=source_language_code,
+        task_str="S2TT"
+        # ,
+        # src_lang=source_language_code,
         tgt_lang=target_language_code,
     )
 
@@ -123,45 +124,45 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
     return str(out_texts[0])
 
 
-def run_t2st(input_text: str, source_language: str, target_language: str) -> tuple[tuple[int, np.ndarray] | None, str]:
-    source_language_code = LANGUAGE_NAME_TO_CODE[source_language]
-    target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
-    out_texts, out_audios = translator.predict(
-        input=input_text,
-        task_str="T2ST",
-        src_lang=source_language_code,
-        tgt_lang=target_language_code,
-    )
-    out_text = str(out_texts[0])
-    out_wav = out_audios.audio_wavs[0].cpu().detach().numpy()
-    return (int(AUDIO_SAMPLE_RATE), out_wav), out_text
+# def run_t2st(input_text: str, source_language: str, target_language: str) -> tuple[tuple[int, np.ndarray] | None, str]:
+#     source_language_code = LANGUAGE_NAME_TO_CODE[source_language]
+#     target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
+#     out_texts, out_audios = translator.predict(
+#         input=input_text,
+#         task_str="T2ST",
+#         src_lang=source_language_code,
+#         tgt_lang=target_language_code,
+#     )
+#     out_text = str(out_texts[0])
+#     out_wav = out_audios.audio_wavs[0].cpu().detach().numpy()
+#     return (int(AUDIO_SAMPLE_RATE), out_wav), out_text
 
 
-def run_t2tt(input_text: str, source_language: str, target_language: str) -> str:
-    source_language_code = LANGUAGE_NAME_TO_CODE[source_language]
-    target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
-    out_texts, _ = translator.predict(
-        input=input_text,
-        task_str="T2TT",
-        src_lang=source_language_code,
-        tgt_lang=target_language_code,
-    )
-    return str(out_texts[0])
+# def run_t2tt(input_text: str, source_language: str, target_language: str) -> str:
+#     source_language_code = LANGUAGE_NAME_TO_CODE[source_language]
+#     target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
+#     out_texts, _ = translator.predict(
+#         input=input_text,
+#         task_str="T2TT",
+#         src_lang=source_language_code,
+#         tgt_lang=target_language_code,
+#     )
+#     return str(out_texts[0])
 
 
-def run_asr(input_audio: str, target_language: str) -> str:
-    preprocess_audio(input_audio)
-    target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
-    out_texts, _ = translator.predict(
-        input=input_audio,
-        task_str="ASR",
-        src_lang=target_language_code,
-        tgt_lang=target_language_code,
-    )
-    return str(out_texts[0])
+# def run_asr(input_audio: str, target_language: str) -> str:
+#     preprocess_audio(input_audio)
+#     target_language_code = LANGUAGE_NAME_TO_CODE[target_language]
+#     out_texts, _ = translator.predict(
+#         input=input_audio,
+#         task_str="ASR",
+#         src_lang=target_language_code,
+#         tgt_lang=target_language_code,
+#     )
+#     return str(out_texts[0])
 
 
-run_s2tt("marathi_01.wav","mar","eng")
+run_s2tt("marathi_01.wav","English","English")
 
 # with gr.Blocks() as demo_s2st:
 #     with gr.Row():
