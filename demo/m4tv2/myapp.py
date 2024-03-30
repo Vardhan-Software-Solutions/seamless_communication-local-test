@@ -7,7 +7,8 @@
 
 from __future__ import annotations
 import sys
-sys.path.append("src/seamless_communication")
+sys.path.append('../../src')
+# sys.path.append("src/seamless_communication")
 
 import os
 import pathlib
