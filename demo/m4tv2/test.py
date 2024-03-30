@@ -12,4 +12,4 @@ import torch
 import torchaudio
 from fairseq2.assets import InProcAssetMetadataProvider, asset_store
 from huggingface_hub import snapshot_download
-from seamless_communication.inference import Translator
+from ../../src/seamless_communication.inference import Translator
