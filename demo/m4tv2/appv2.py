@@ -120,4 +120,4 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
     return str(out_texts[0])
 
 
-run_s2tt("marathi_01.wav","Marathi","English")
+run_s2tt("2079-11-21_3.wav","Nepali","English")
