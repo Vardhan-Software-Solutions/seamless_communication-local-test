@@ -1,6 +1,6 @@
 from __future__ import annotations
 import sys
-sys.path.append('../core')
+sys.path.append('../core/')
 
 import os
 import pathlib
