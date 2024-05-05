@@ -91,6 +91,7 @@ def preprocess_audio(input_audio: str) -> None:
     torchaudio.save(input_audio, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
 
 
+OUTPUT_FILE = "s2tt_output.txt"
 
 def run_s2tt(input_audio: str, source_language: str, target_language: str) -> str:
     preprocess_audio(input_audio)
@@ -104,6 +105,19 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
     )
 
     print(" OUTPUT --> ",out_texts[0])
+     # Write the output to a file
+    try:
+        with open(OUTPUT_FILE, 'a') as f:  # 'a' mode appends to the file
+            f.write(f"Input Audio: {input_audio}\n")
+            f.write(f"Source Language: {source_language} ({source_language_code})\n")
+            f.write(f"Target Language: {target_language} ({target_language_code})\n")
+            f.write(f"Translation: {out_texts[0]}\n")
+            f.write("=" * 40 + "\n")  # Add a separator between entries
+
+    except Exception as e:
+        print(f"Error writing to {OUTPUT_FILE}: {e}")
+
     return str(out_texts[0])
-print(" RUNNING --> 1")
-run_s2tt("marathi_01.wav","English","English")
+
+
+run_s2tt("marathi_01.wav","Marathi","English")
