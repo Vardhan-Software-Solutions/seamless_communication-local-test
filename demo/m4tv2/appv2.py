@@ -108,7 +108,7 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
 
     print("------------- FULL TEXT ---------------")
     for text in out_texts:
-    print(text)
+       print(text)
     
      # Write the output to a file
     try:
