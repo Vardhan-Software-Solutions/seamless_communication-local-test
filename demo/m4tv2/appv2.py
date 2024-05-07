@@ -62,7 +62,7 @@ translation and more, without relying on multiple separate models.
 CACHE_EXAMPLES = os.getenv("CACHE_EXAMPLES") == "1" and torch.cuda.is_available()
 
 AUDIO_SAMPLE_RATE = 16000.0
-MAX_INPUT_AUDIO_LENGTH = 60  # in seconds
+MAX_INPUT_AUDIO_LENGTH = 500  # in seconds
 DEFAULT_TARGET_LANGUAGE = "French"
 
 if torch.cuda.is_available():
