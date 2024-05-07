@@ -105,6 +105,11 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
     )
 
     print(" OUTPUT --> ",out_texts[0])
+
+    print("------------- FULL TEXT ---------------")
+    for text in out_texts:
+    print(text)
+    
      # Write the output to a file
     try:
         with open(OUTPUT_FILE, 'a') as f:  # 'a' mode appends to the file
