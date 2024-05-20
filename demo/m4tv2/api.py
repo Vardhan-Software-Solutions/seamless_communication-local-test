@@ -21,9 +21,9 @@ def upload_file():
     if not (source_lang and target_lang):
         return jsonify({'error': 'sourceLang and targetLang are required'})
 
-    if not os.path.exists('downloads'):
-        os.makedirs('downloads')
-    file.save(os.path.join('downloads', 'input.wav'))
+    # if not os.path.exists('downloads'):
+    #     os.makedirs('downloads')
+    file.save(os.path.join('input.wav'))
 
     data = {'sourceLang': source_lang, 'targetLang': target_lang}
     with open('config.json', 'w') as json_file:
