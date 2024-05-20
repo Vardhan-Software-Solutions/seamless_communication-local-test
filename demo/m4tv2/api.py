@@ -40,23 +40,16 @@ def upload_file():
     return jsonify({'message': 'File uploaded successfully and main.py executed'})
 
 
+@app.route('/result1', methods=['GET'])
+def get_result():
+    with open('s2tt_output.txt', 'r') as file:
+        result_data = file.read()
+ return jsonify(result_data)
+
 @app.route('/result', methods=['GET'])
 def get_result():
     with open('s2tt_output.txt', 'r') as file:
         result_data = file.read()
-
-    # lines = result_data.split('\n')
-    # numbers = [int(line.split()[0]) for line in lines if line]
-    # output_text = None
-    # for line in lines:
-    #     if line.startswith('100 '):
-    #         output_text = line.split(' ', 1)[1]
-    #         break
-
-    # response_data = {'numbers': numbers}
-    # if output_text:
-    #     response_data['output_text'] = output_text
-
     return jsonify(result_data)
 
 
