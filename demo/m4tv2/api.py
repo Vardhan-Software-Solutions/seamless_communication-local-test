@@ -41,7 +41,7 @@ def upload_file():
 
 
 @app.route('/result-size', methods=['GET'])
-def get_result():
+def get_result_size():
     file_path = 's2tt_output.txt'
     try:
         file_size = os.path.getsize(file_path)
