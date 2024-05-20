@@ -33,6 +33,9 @@ def upload_file():
     with open('audio.json', 'w') as audio_file:
         json.dump(audio_data, audio_file)
 
+    with open('s2tt_output.txt', 'w') as output_file:
+        output_file.write('')
+        
     subprocess.Popen(['python', 'appv2.py'])
     return jsonify({'message': 'File uploaded successfully and main.py executed'})
 
