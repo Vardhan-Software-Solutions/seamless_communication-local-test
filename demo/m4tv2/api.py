@@ -40,6 +40,15 @@ def upload_file():
     return jsonify({'message': 'File uploaded successfully and main.py executed'})
 
 
+@app.route('/result-size', methods=['GET'])
+def get_result():
+    file_path = 's2tt_output.txt'
+    try:
+        file_size = os.path.getsize(file_path)
+        return jsonify({'file_size': file_size})
+    except FileNotFoundError:
+        return jsonify({'error': 'File not found'}), 404
+        
 @app.route('/result1', methods=['GET'])
 def get_result():
     with open('s2tt_output.txt', 'r') as file:
