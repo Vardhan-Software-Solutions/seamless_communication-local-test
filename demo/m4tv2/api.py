@@ -51,15 +51,6 @@ def get_result():
     with open('s2tt_output.txt', 'r') as file:
         result_data = file.read()
     return jsonify(result_data)
-
-@app.route('/result-json', methods=['GET'])
-def get_result():
-    try:
-        with open('s2tt_output.txt', 'r') as file:
-            result_data = file.read()
-        return jsonify({'result': result_data})
-    except FileNotFoundError:
-        return jsonify({'error': 'File not found'}), 404
         
 @app.route('/config', methods=['GET'])
 def get_state():
