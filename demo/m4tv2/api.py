@@ -49,11 +49,11 @@ def get_result():
     except FileNotFoundError:
         return jsonify({'error': 'File not found'}), 404
         
-@app.route('/result1', methods=['GET'])
-def get_result():
-    with open('s2tt_output.txt', 'r') as file:
-        result_data = file.read()
- return jsonify(result_data)
+# @app.route('/result1', methods=['GET'])
+# def get_result():
+#     with open('s2tt_output.txt', 'r') as file:
+#         result_data = file.read()
+#  return jsonify(result_data)
 
 @app.route('/result', methods=['GET'])
 def get_result():
