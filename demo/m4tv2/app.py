@@ -367,4 +367,5 @@ with gr.Blocks(css="style.css") as demo:
 
 
 if __name__ == "__main__":
+    print('app.py is running')
     demo.queue(max_size=50).launch()

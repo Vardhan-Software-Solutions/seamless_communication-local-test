@@ -21,6 +21,10 @@ def upload_file():
     if not (source_lang and target_lang):
         return jsonify({'error': 'sourceLang and targetLang are required'})
 
+    allowed_languages = ['pashto', 'nepali', 'punjabi', 'urdu']
+    if source_lang not in allowed_languages:
+        return jsonify({'error': 'Source language not recognized. Kindly contact the administrator.'})
+
     if not os.path.exists('downloads'):
         os.makedirs('downloads')
     file.save(os.path.join('downloads', 'input.wav'))
@@ -65,8 +69,6 @@ def get_state():
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
-
-
 # import os
 # import json
 # import subprocess
@@ -80,6 +82,51 @@ if __name__ == '__main__':
 #     path = environ.get('PATH_INFO', '').lstrip('/')
 #     method = environ.get('REQUEST_METHOD')
 
+#     # if path == 'upload' and method == 'POST':
+#     #     try:
+#     #         # Read and parse form data
+#     #         content_length = int(environ.get('CONTENT_LENGTH', 0))
+#     #         body = environ['wsgi.input'].read(content_length)
+#     #         form_data = parse_qs(body.decode('utf-8'))
+
+#     #         # Check if file part exists
+#     #         if b'file' not in form_data:
+#     #             start_response('400 Bad Request', [('Content-Type', 'application/json')])
+#     #             return [json.dumps({'error': 'No file part'}).encode('utf-8')]
+
+#     #         # Simulate saving the file
+#     #         file = form_data[b'file'][0]
+#     #         file_path = 'input.wav'
+#     #         with open(file_path, 'wb') as f:
+#     #             f.write(file.encode('utf-8'))
+
+#     #         # Read languages
+#     #         source_lang = form_data.get(b'sourceLang', [None])[0]
+#     #         target_lang = form_data.get(b'targetLang', [None])[0]
+#     #         if not (source_lang and target_lang):
+#     #             start_response('400 Bad Request', [('Content-Type', 'application/json')])
+#     #             return [json.dumps({'error': 'sourceLang and targetLang are required'}).encode('utf-8')]
+
+#     #         # Save config
+#     #         data = {'sourceLang': source_lang.decode('utf-8'), 'targetLang': target_lang.decode('utf-8')}
+#     #         with open('config.json', 'w') as json_file:
+#     #             json.dump(data, json_file)
+
+#     #         # Save audio data
+#     #         audio_data = {'sourceLang': source_lang.decode('utf-8'), 'targetLang': target_lang.decode('utf-8'), 'filename': 'input.wav'}
+#     #         with open('audio.json', 'w') as audio_file:
+#     #             json.dump(audio_data, audio_file)
+
+#     #         # Run subprocess
+#     #         subprocess.run(['python', 'app.py'])
+
+#     #         # Return success response
+#     #         start_response('200 OK', [('Content-Type', 'application/json')])
+#     #         return [json.dumps({'message': 'File uploaded successfully and main.py executed'}).encode('utf-8')]
+
+#     #     except Exception as e:
+#     #         start_response('500 Internal Server Error', [('Content-Type', 'application/json')])
+#     #         return [json.dumps({'error': str(e)}).encode('utf-8')]
 #     if path == 'upload' and method == 'POST':
 #         try:
 #             # Read and parse form data
@@ -105,6 +152,12 @@ if __name__ == '__main__':
 #                 start_response('400 Bad Request', [('Content-Type', 'application/json')])
 #                 return [json.dumps({'error': 'sourceLang and targetLang are required'}).encode('utf-8')]
 
+#             # Check if the source language is recognized
+#             allowed_languages = ['pashto', 'nepali', 'punjabi', 'urdu']
+#             if source_lang.decode('utf-8') not in allowed_languages:
+#                 start_response('400 Bad Request', [('Content-Type', 'application/json')])
+#                 return [json.dumps({'error': 'Source language not recognized. Kindly contact the administrator.'}).encode('utf-8')]
+
 #             # Save config
 #             data = {'sourceLang': source_lang.decode('utf-8'), 'targetLang': target_lang.decode('utf-8')}
 #             with open('config.json', 'w') as json_file:
@@ -125,6 +178,7 @@ if __name__ == '__main__':
 #         except Exception as e:
 #             start_response('500 Internal Server Error', [('Content-Type', 'application/json')])
 #             return [json.dumps({'error': str(e)}).encode('utf-8')]
+
 
 #     elif path == 'result' and method == 'GET':
 #         try:
