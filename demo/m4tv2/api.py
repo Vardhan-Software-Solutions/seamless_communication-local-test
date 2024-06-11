@@ -5,10 +5,11 @@ import json
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    # Check if the file part is in the request
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
 
@@ -18,26 +19,33 @@ def upload_file():
 
     source_lang = request.form.get('sourceLang')
     target_lang = request.form.get('targetLang')
+    
+    # Check if both sourceLang and targetLang are provided
     if not (source_lang and target_lang):
         return jsonify({'error': 'sourceLang and targetLang are required'})
 
+    # List of allowed source languages
     allowed_languages = ['pashto', 'nepali', 'punjabi', 'urdu']
     if source_lang not in allowed_languages:
         return jsonify({'error': 'Source language not recognized. Kindly contact the administrator.'})
 
-    if not os.path.exists('downloads'):
-        os.makedirs('downloads')
-    file.save(os.path.join('downloads', 'input.wav'))
+    # Save the file
+    file.save('input.wav')
 
+    # Save config data
     data = {'sourceLang': source_lang, 'targetLang': target_lang}
     with open('config.json', 'w') as json_file:
         json.dump(data, json_file)
 
-    audio_data = {'sourceLang': source_lang, 'targetLang': target_lang, 'filename': 'downloads/input.wav'}
+    # Save audio data
+    audio_data = {'sourceLang': source_lang, 'targetLang': target_lang, 'filename': 'input.wav'}
     with open('audio.json', 'w') as audio_file:
         json.dump(audio_data, audio_file)
 
-    subprocess.run(['python', 'appv2.py'])
+    # Run subprocess
+    subprocess.run(['python', 'app.py'])
+    
+    # Return success response
     return jsonify({'message': 'File uploaded successfully and main.py executed'})
 
 
@@ -46,28 +54,36 @@ def get_result():
     with open('s2tt_output.txt', 'r') as file:
         result_data = file.read()
 
-    lines = result_data.split('\n')
-    numbers = [int(line.split()[0]) for line in lines if line]
-    output_text = None
-    for line in lines:
-        if line.startswith('100 '):
-            output_text = line.split(' ', 1)[1]
-            break
-
-    response_data = {'numbers': numbers}
-    if output_text:
-        response_data['output_text'] = output_text
-
-    return jsonify(response_data)
+    return result_data
 
 
 @app.route('/config', methods=['GET'])
 def get_state():
     return jsonify({'message': 'All okay'})
 
+OUTPUT_FILE = "s2tt_output.txt"
+
+@app.route('/result-size', methods=['GET'])
+def get_result_size():
+    try:
+        file_size = os.path.getsize(OUTPUT_FILE)
+        return jsonify({'message': 'All okay', 'file_size': file_size})
+    except OSError as e:
+        return jsonify({'message': 'Error reading file', 'error': str(e)}), 500
+    
+@app.route('/clear-file', methods=['POST'])
+def clear_file():
+    try:
+        open(OUTPUT_FILE, 'w').close()
+        return jsonify({'message': 'File cleared successfully'})
+    except OSError as e:
+        return jsonify({'message': 'Error clearing file', 'error': str(e)}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    print('server start------')
+    app.run(debug=True,host='0.0.0.0', port=5000)
+
 
 # import os
 # import json
