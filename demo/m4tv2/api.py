@@ -43,7 +43,7 @@ def upload_file():
         json.dump(audio_data, audio_file)
 
     # Run subprocess
-    subprocess.run(['python', 'app.py'])
+    subprocess.run(['python', 'appv2.py'])
     
     # Return success response
     return jsonify({'message': 'File uploaded successfully and main.py executed'})
