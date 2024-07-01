@@ -91,7 +91,8 @@ def preprocess_audio(input_audio: str) -> None:
     torchaudio.save(input_audio, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
 
 
-OUTPUT_FILE = os.getenv('SOURCE_FILE_CONTENT') //"s2tt_output.txt"
+OUTPUT_FILE = os.getenv('SOURCE_FILE_CONTENT') 
+# //"s2tt_output.txt"
 
 def run_s2tt(input_audio: str, source_language: str, target_language: str) -> str:
     preprocess_audio(input_audio)
