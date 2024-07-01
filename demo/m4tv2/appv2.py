@@ -124,5 +124,12 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
 
     return str(out_texts[0])
 
+source_file_name = os.getenv('SOURCE_FILE_NAME')
+source_lang = os.getenv('SOURCE_LANG')
+target_lang = os.getenv('TARGET_LANG')
+if source_file_name and source_lang and target_lang:
+    run_s2tt(source_file_name, source_lang, target_lang)
+else:
+    print("Error: Missing required environment variables.")
 
-run_s2tt("input.wav","Nepali","English")
+# run_s2tt("input.wav","Nepali","English")
