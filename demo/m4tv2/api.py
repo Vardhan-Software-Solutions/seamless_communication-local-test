@@ -50,7 +50,7 @@ def upload_file():
     subprocess.run(['python', 'appv2.py'])
 
 
-     os.environ.pop('SOURCE_FILE_NAME', None)
+    os.environ.pop('SOURCE_FILE_NAME', None)
     os.environ.pop('SOURCE_LANG', None)
     os.environ.pop('TARGET_LANG', None)
     
