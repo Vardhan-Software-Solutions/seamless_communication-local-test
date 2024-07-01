@@ -44,6 +44,15 @@ def upload_file():
 
     os.environ['SOURCE_FILE_NAME'] = filename
     os.environ['SOURCE_LANG'] = source_lang
+    os.environ['TARGET_LANG'] = source_lang
+    
+    # Run subprocess
+    subprocess.run(['python', 'appv2.py'])
+
+
+
+    os.environ['SOURCE_FILE_NAME'] = filename
+    os.environ['SOURCE_LANG'] = source_lang
     os.environ['TARGET_LANG'] = target_lang
     
     # Run subprocess
