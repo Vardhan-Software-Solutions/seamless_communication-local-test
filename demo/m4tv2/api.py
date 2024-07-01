@@ -76,6 +76,14 @@ def get_result():
     return result_data
 
 
+@app.route('/result-self', methods=['GET'])
+def get_result():
+    with open('s2tt_output_2.txt', 'r') as file:
+        result_data = file.read()
+
+    return result_data
+
+
 @app.route('/config', methods=['GET'])
 def get_state():
     return jsonify({'message': 'All okay'})
@@ -93,7 +101,8 @@ def get_result_size():
 @app.route('/clear-file', methods=['POST'])
 def clear_file():
     try:
-        open(OUTPUT_FILE, 'w').close()
+        open("s2tt_output_2.txt", 'w').close()
+        open("s2tt_output.txt", 'w').close()
         return jsonify({'message': 'File cleared successfully'})
     except OSError as e:
         return jsonify({'message': 'Error clearing file', 'error': str(e)}), 500
