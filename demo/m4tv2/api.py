@@ -42,6 +42,7 @@ def upload_file():
     with open('audio.json', 'w') as audio_file:
         json.dump(audio_data, audio_file)
 
+    os.environ['SOURCE_FILE_CONTENT'] = ""
     os.environ['SOURCE_FILE_NAME'] = filename
     os.environ['SOURCE_LANG'] = source_lang
     os.environ['TARGET_LANG'] = source_lang
