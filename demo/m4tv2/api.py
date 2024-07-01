@@ -77,7 +77,7 @@ def get_result():
 
 
 @app.route('/result-self', methods=['GET'])
-def get_result():
+def get_result_self():
     with open('s2tt_output_2.txt', 'r') as file:
         result_data = file.read()
 
