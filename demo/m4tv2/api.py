@@ -42,8 +42,17 @@ def upload_file():
     with open('audio.json', 'w') as audio_file:
         json.dump(audio_data, audio_file)
 
+    os.environ['SOURCE_FILE_NAME'] = filename
+    os.environ['SOURCE_LANG'] = source_lang
+    os.environ['TARGET_LANG'] = target_lang
+    
     # Run subprocess
     subprocess.run(['python', 'appv2.py'])
+
+
+     os.environ.pop('SOURCE_FILE_NAME', None)
+    os.environ.pop('SOURCE_LANG', None)
+    os.environ.pop('TARGET_LANG', None)
     
     # Return success response
     return jsonify({'message': 'File uploaded successfully and main.py executed'})
