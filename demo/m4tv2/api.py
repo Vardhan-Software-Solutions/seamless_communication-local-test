@@ -42,15 +42,16 @@ def upload_file():
     with open('audio.json', 'w') as audio_file:
         json.dump(audio_data, audio_file)
 
+    print("changes for upload")
     os.environ['SOURCE_FILE_CONTENT'] = "s2tt_output_2.txt"
     os.environ['SOURCE_FILE_NAME'] = 'input.wav'
     os.environ['SOURCE_LANG'] = source_lang
     os.environ['TARGET_LANG'] = source_lang
-    
+    print("changes for processing")
     # Run subprocess
     subprocess.run(['python', 'appv2.py'])
 
-
+    print("after changes for processing")
     os.environ['SOURCE_FILE_CONTENT'] = "s2tt_output.txt"
     os.environ['SOURCE_FILE_NAME'] = 'input.wav'
     os.environ['SOURCE_LANG'] = source_lang
