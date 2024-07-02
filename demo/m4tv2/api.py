@@ -10,34 +10,41 @@ CORS(app)
 @app.route('/upload', methods=['POST'])
 def upload_file():
     # Check if the file part is in the request
-    print(" after changes --> upload --> ")
+    print(" after changes --> upload -->1 ")
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
 
+    print(" after changes --> upload -->1 ")
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
 
+    print(" after changes --> upload -->2 ")
     source_lang = request.form.get('sourceLang')
     target_lang = request.form.get('targetLang')
-    
+
+    print(" after changes --> upload -->3 ")
     # Check if both sourceLang and targetLang are provided
     if not (source_lang and target_lang):
         return jsonify({'error': 'sourceLang and targetLang are required'})
 
+    print(" after changes --> upload -->4 ")
     # List of allowed source languages
-    allowed_languages = ['pashto', 'nepali', 'punjabi', 'urdu']
+    allowed_languages = ['Pashto', 'Nepali', 'Punjabi', 'Urdu']
     if source_lang not in allowed_languages:
         return jsonify({'error': 'Source language not recognized. Kindly contact the administrator.'})
 
+    print(" after changes --> upload -->5 ")
     # Save the file
     file.save('input.wav')
 
+    print(" after changes --> upload -->6 ")
     # Save config data
     data = {'sourceLang': source_lang, 'targetLang': target_lang}
     with open('config.json', 'w') as json_file:
         json.dump(data, json_file)
 
+    print(" after changes --> upload -->7 ")
     # Save audio data
     audio_data = {'sourceLang': source_lang, 'targetLang': target_lang, 'filename': 'input.wav'}
     with open('audio.json', 'w') as audio_file:
