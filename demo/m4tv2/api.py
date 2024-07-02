@@ -10,6 +10,7 @@ CORS(app)
 @app.route('/upload', methods=['POST'])
 def upload_file():
     # Check if the file part is in the request
+    print(" after changes --> upload --> ")
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
 
