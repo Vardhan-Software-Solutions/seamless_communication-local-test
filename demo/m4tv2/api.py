@@ -30,7 +30,7 @@ def upload_file():
 
     print(" after changes --> upload -->4 ")
     # List of allowed source languages
-    allowed_languages = ['Pashto', 'Nepali', 'Punjabi', 'Urdu']
+    allowed_languages = ['Southern Pashto', 'Nepali', 'Punjabi', 'Urdu']
     if source_lang not in allowed_languages:
         return jsonify({'error': 'Source language not recognized. Kindly contact the administrator.'})
 
