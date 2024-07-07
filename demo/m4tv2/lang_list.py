@@ -71,7 +71,7 @@ language_code_to_name = {
     "oci": "Occitan",
     "ory": "Odia",
     "pan": "Punjabi",
-    "pbt": "Southern Pashto",
+    "pbt": "Pashto",
     "pes": "Western Persian",
     "pol": "Polish",
     "por": "Portuguese",
