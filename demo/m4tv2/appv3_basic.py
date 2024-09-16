@@ -149,4 +149,4 @@ def run_s2tt(input_audio: str, source_language: str, target_language: str) -> st
 
 
 print("------------- 222222 ---------------")
-run_s2tt("output_audio1_part1.mp3","English","English")
+run_s2tt("output.wav","English","English")
