@@ -2,6 +2,7 @@ import subprocess
 import whisper
 import os
 import numpy as np
+import openai
 import boto3
 from sentence_transformers import SentenceTransformer
 
@@ -9,6 +10,8 @@ from sentence_transformers import SentenceTransformer
 s3_bucket_name = "for-ott-ssai-input"
 s3_object_key = "micro-content/stored-video/input.mp4"
 local_mp4_path = "input.mp4"
+
+openai.api_key = os.getenv("OPENAI_API_KEY", "sk-svcacct-7fXdyXuVNd9VEsvjz20GRxIraolMFH6faXEoqsxfbhZ2J97EBDpjd19aMiVMdLpAMx-adBv58dxT3BlbkFJbtIhUo4xUva9sW8wSgCUZ7IjR8XvwABPp5-BgxM_VEMH-yXvCRASAx-HuM5SVI2OIz64xp4KsAA")
 
 # Load Whisper model and SentenceTransformer model
 whisper_model = whisper.load_model("base")
@@ -20,6 +23,44 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Initialize Boto3 client
 s3 = boto3.client('s3')
+
+# Step 4: Use GPT-4 to Determine Context-Based Segments
+def segment_transcription_with_gpt(transcription):
+    text = transcription['text']
+
+    # Create a prompt for GPT-4
+    prompt = (
+        "The following is a transcription of a news broadcast. "
+        "Please divide the transcription into context-based segments. "
+        "Provide the segments in the following JSON-like format:\n\n"
+        "[\n"
+        "  {\n"
+        "    'start_time': start time of the segment,\n"
+        "    'end_time': end time of the segment,\n"
+        "    'text': 'transcribed text for this segment'\n"
+        "  },\n"
+        "  ...\n"
+        "]\n\n"
+        "Here is the transcription:\n"
+        f"{text}\n"
+    )
+
+    # Use OpenAI API to get context-based segments
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    segments_text = response['choices'][0]['message']['content']
+    
+    # Convert the response to a usable format (assuming it's a JSON-like output)
+    import ast
+    segments = ast.literal_eval(segments_text)
+
+    return segments
 
 # Step 1: Download MP4 File from S3 Using Boto3
 def download_from_s3(bucket_name, object_key, local_file):
@@ -132,6 +173,11 @@ def main():
     transcription = transcribe_audio(audio_file)
     print("Transcribing---------------")
     print(transcription)
+
+    print("Segmenting the transcription using GPT-4...")
+    segments1 = segment_transcription_with_gpt(transcription)
+    print(" -------- CHATGPT ---------- ")
+    print(segments1)
 
     # Step 4: Segment the transcription based on context
     print("Segmenting the transcription based on context...")
