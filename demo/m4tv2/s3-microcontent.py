@@ -67,7 +67,7 @@ def segment_transcription_with_gpt(transcription):
                 "content": prompt,
             }
             ],
-            model="gpt-4o",
+            model="gpt-4o-mini",
         )
 
     print("response ", response)
