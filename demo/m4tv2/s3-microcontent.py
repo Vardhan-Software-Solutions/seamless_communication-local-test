@@ -88,10 +88,11 @@ def download_from_s3(bucket_name, object_key, local_file):
     print(f"Downloaded {object_key} from S3 bucket {bucket_name} to {local_file}")
 
 # Step 2: Extract Audio from MP4 File Using FFmpeg
-def extract_audio(input_file, output_audio):
+def extract_audio(input_file, output_audio, duration=60):
     command = [
         "ffmpeg",
         "-i", input_file,
+          "-t", str(duration),  # Duration of extraction (1 minute)
         "-vn",  # No video
         "-acodec", "pcm_s16le",  # Convert to PCM
         "-ar", "16000",  # Sample rate
@@ -182,11 +183,11 @@ def main():
     # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
-    audio_file = "output.wav"
+    audio_file = "output_min.wav"
 
     # Step 2: Extract audio from MP4
     print("Extracting audio from MP4...")
-    # extract_audio(local_mp4_path, audio_file)
+    extract_audio(local_mp4_path, audio_file)
 
     # Step 3: Transcribe audio using Whisper
     print("Transcribing audio using Whisper...")
