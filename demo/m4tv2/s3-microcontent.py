@@ -3,6 +3,7 @@ import whisper
 import os
 import numpy as np
 from openai import OpenAI
+import tiktoken
 import boto3
 from sentence_transformers import SentenceTransformer
 
@@ -27,6 +28,10 @@ embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 # Set output directory for segments
 output_dir = "news_segments"
 os.makedirs(output_dir, exist_ok=True)
+
+
+tokenizer = tiktoken.encoding_for_model("gpt-4o-mini")
+TOKEN_LIMIT = 4096
 
 # Initialize Boto3 client
 s3 = boto3.client('s3')
@@ -59,6 +64,11 @@ def segment_transcription_with_gpt(transcription):
     #         {"role": "user", "content": prompt}
     #     ]
     # )
+
+    prompt_tokens = len(tokenizer.encode(prompt))
+    print(" LEN OF TOKENS ", prompt_tokens)
+    if prompt_tokens > TOKEN_LIMIT:
+        print(f"Prompt token count ({prompt_tokens}) exceeds the limit ({TOKEN_LIMIT}). Truncating the text.")    
 
     response = client.chat.completions.create(
         messages=[
