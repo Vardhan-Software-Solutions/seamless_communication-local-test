@@ -100,7 +100,7 @@ def main():
 
     # Step 1: Extract audio from MP4
     print("Extracting audio from MP4...")
-    extract_audio(input_mp4, audio_file)
+    # extract_audio(input_mp4, audio_file)
 
     # Step 2: Transcribe audio using Whisper
     print("Transcribing audio using Whisper...")
