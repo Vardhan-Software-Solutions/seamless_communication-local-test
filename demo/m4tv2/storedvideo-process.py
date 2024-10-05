@@ -85,10 +85,10 @@ def save_segments(input_video, segments):
 # Main function to handle all steps
 def main():
     # Define paths
-    audio_file = "temp_audio1.wav"
+    audio_file = "output.wav"
 
     # Step 1: Extract audio from MP4
-    extract_audio(input_mp4, audio_file)
+    # extract_audio(input_mp4, audio_file)
 
     print("  -EXTRACTION DONE ----------------- ")
     # Step 2: Transcribe audio using Whisper
