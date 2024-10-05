@@ -1,23 +1,30 @@
-# pip3 install openai-whisper ffmpeg-python sentence-transformers numpy
-# pip3 install boto3 openai-whisper ffmpeg-python sentence-transformers
-
-
 import subprocess
 import whisper
 import os
 import numpy as np
+import boto3
 from sentence_transformers import SentenceTransformer
+
+# AWS S3 configuration
+s3_bucket_name = "for-ott-ssai-input"
+s3_object_key = "s3://for-ott-ssai-input/micro-content/stored-video/input.mp4"
+local_mp4_path = "input.mp4"
 
 # Load Whisper model and SentenceTransformer model
 whisper_model = whisper.load_model("base")
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# Set your input MP4 file
-input_mp4 = "input.mp4"
+# Set output directory for segments
 output_dir = "news_segments"
 os.makedirs(output_dir, exist_ok=True)
 
-# Step 1: Extract Audio from MP4 File Using FFmpeg
+# Step 1: Download MP4 File from S3 Using Boto3
+def download_from_s3(bucket_name, object_key, local_file):
+    s3 = boto3.client('s3')
+    s3.download_file(bucket_name, object_key, local_file)
+    print(f"Downloaded {object_key} from S3 bucket {bucket_name} to {local_file}")
+
+# Step 2: Extract Audio from MP4 File Using FFmpeg
 def extract_audio(input_file, output_audio):
     command = [
         "ffmpeg",
@@ -30,12 +37,12 @@ def extract_audio(input_file, output_audio):
     ]
     subprocess.run(command, check=True)
 
-# Step 2: Transcribe Audio Using Whisper
+# Step 3: Transcribe Audio Using Whisper
 def transcribe_audio(audio_file):
     result = whisper_model.transcribe(audio_file)
     return result
 
-# Step 3: Segment Transcription Based on Context
+# Step 4: Segment Transcription Based on Context
 def segment_transcription(transcription):
     segments = transcription['segments']
     sentences = [segment['text'] for segment in segments]
@@ -71,7 +78,7 @@ def segment_transcription(transcription):
 
     return segmented_transcriptions
 
-# Step 4: Save Each Segment as a Separate File
+# Step 5: Save Each Segment as a Separate File
 def save_segments(input_video, segments):
     for i, segment in enumerate(segments):
         start_time = segment["start_time"]
@@ -96,28 +103,28 @@ def save_segments(input_video, segments):
 
 # Main function to handle all steps
 def main():
+    # Step 1: Download the MP4 file from S3
+    print("Downloading MP4 file from S3...")
+    download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
+
     # Define paths
-    audio_file = "output.wav"
+    audio_file = "temp_audio.wav"
 
-    # Step 1: Extract audio from MP4
+    # Step 2: Extract audio from MP4
     print("Extracting audio from MP4...")
-    # extract_audio(input_mp4, audio_file)
+    extract_audio(local_mp4_path, audio_file)
 
-    # Step 2: Transcribe audio using Whisper
+    # Step 3: Transcribe audio using Whisper
     print("Transcribing audio using Whisper...")
     transcription = transcribe_audio(audio_file)
-    print(" -------- transcription --------- ")
-    print(transcription)
 
-    # Step 3: Segment the transcription based on context
+    # Step 4: Segment the transcription based on context
     print("Segmenting the transcription based on context...")
     segments = segment_transcription(transcription)
 
-    print(" -------- segments --------- ")
-    print(segments)
-    # Step 4: Save each segment as a separate video file
+    # Step 5: Save each segment as a separate video file
     print("Saving each segment as a separate video file...")
-    save_segments(input_mp4, segments)
+    save_segments(local_mp4_path, segments)
 
     # Clean up temporary audio file
     os.remove(audio_file)
