@@ -42,9 +42,9 @@ s3 = boto3.client('s3')
 
 
 # Load Mistral or other open LLM model and tokenizer
-model_name = "mistralai/Mistral-7B"  # Example model name, you may replace it with an available model
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+
 
 
 
