@@ -76,7 +76,7 @@ CACHE_EXAMPLES = os.getenv("CACHE_EXAMPLES") == "1" and torch.cuda.is_available(
 print(" SRC loaded 777")
 
 AUDIO_SAMPLE_RATE = 48000.0
-MAX_INPUT_AUDIO_LENGTH = 5000  # in seconds
+MAX_INPUT_AUDIO_LENGTH = 65000  # in seconds
 DEFAULT_TARGET_LANGUAGE = "English"
 
 print(" SRC loaded 888")
