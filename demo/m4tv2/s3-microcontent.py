@@ -2,7 +2,7 @@ import subprocess
 import whisper
 import os
 import numpy as np
-import openai
+from openai import OpenAI
 import boto3
 from sentence_transformers import SentenceTransformer
 
@@ -11,7 +11,14 @@ s3_bucket_name = "for-ott-ssai-input"
 s3_object_key = "micro-content/stored-video/input.mp4"
 local_mp4_path = "input.mp4"
 
-openai.api_key = os.getenv("OPENAI_API_KEY", "sk-svcacct-7fXdyXuVNd9VEsvjz20GRxIraolMFH6faXEoqsxfbhZ2J97EBDpjd19aMiVMdLpAMx-adBv58dxT3BlbkFJbtIhUo4xUva9sW8wSgCUZ7IjR8XvwABPp5-BgxM_VEMH-yXvCRASAx-HuM5SVI2OIz64xp4KsAA")
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(
+    # This is the default and can be omitted
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
+
+
 
 # Load Whisper model and SentenceTransformer model
 whisper_model = whisper.load_model("base")
@@ -46,13 +53,24 @@ def segment_transcription_with_gpt(transcription):
     )
 
     # Use OpenAI API to get context-based segments
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
-    )
+    # response = openai.ChatCompletion.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "user", "content": prompt}
+    #     ]
+    # )
 
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+            ],
+            model="gpt-4o",
+        )
+
+    print("response ", response)
     # Extract the generated content from the response
     segments_text = response['choices'][0]['message']['content']
     
