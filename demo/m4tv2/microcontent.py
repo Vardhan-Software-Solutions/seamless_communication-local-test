@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 
 # AWS S3 configuration
 s3_bucket_name = "for-ott-ssai-input"
-s3_object_key = "s3://for-ott-ssai-input/micro-content/stored-video/input.mp4"
+s3_object_key = "micro-content/stored-video/input.mp4"
 local_mp4_path = "input.mp4"
 
 # Load Whisper model and SentenceTransformer model
