@@ -118,10 +118,10 @@ def upload_segments_to_s3(bucket_name, segment_files):
 def main():
     # Step 1: Download the MP4 file from S3
     print("Downloading MP4 file from S3...")
-    download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
+    # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
-    audio_file = "temp_audio.wav"
+    audio_file = "output.wav"
 
     # Step 2: Extract audio from MP4
     print("Extracting audio from MP4...")
