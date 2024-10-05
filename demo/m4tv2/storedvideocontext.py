@@ -105,11 +105,15 @@ def main():
     # Step 2: Transcribe audio using Whisper
     print("Transcribing audio using Whisper...")
     transcription = transcribe_audio(audio_file)
+    print(" -------- transcription --------- ")
+    print(transcription)
 
     # Step 3: Segment the transcription based on context
     print("Segmenting the transcription based on context...")
     segments = segment_transcription(transcription)
 
+    print(" -------- segments --------- ")
+    print(segments)
     # Step 4: Save each segment as a separate video file
     print("Saving each segment as a separate video file...")
     save_segments(input_mp4, segments)
