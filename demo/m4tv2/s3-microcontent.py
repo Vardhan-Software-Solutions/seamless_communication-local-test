@@ -7,6 +7,10 @@ import tiktoken
 import boto3
 from sentence_transformers import SentenceTransformer
 
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+
+
 # AWS S3 configuration
 s3_bucket_name = "for-ott-ssai-input"
 s3_object_key = "micro-content/stored-video/input.mp4"
@@ -30,11 +34,65 @@ output_dir = "news_segments"
 os.makedirs(output_dir, exist_ok=True)
 
 
-tokenizer = tiktoken.encoding_for_model("gpt-4o-mini")
+# tokenizer = tiktoken.encoding_for_model("gpt-4o-mini")
 TOKEN_LIMIT = 4096
 
 # Initialize Boto3 client
 s3 = boto3.client('s3')
+
+
+# Load Mistral or other open LLM model and tokenizer
+model_name = "mistralai/Mistral-7B"  # Example model name, you may replace it with an available model
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+
+
+def segment_transcription_with_mistral(transcription):
+    text = transcription['text']
+
+    # Create the prompt for Mistral-like LLM
+    prompt = (
+        "The following is a transcription of a news broadcast. "
+        "Please divide the transcription into context-based segments. "
+        "Provide the segments in a structured format:\n\n"
+        f"{text}\n"
+        "Divide the above transcription into distinct topics and provide structured segments."
+    )
+
+    # Tokenize the prompt
+    inputs = tokenizer(prompt, return_tensors="pt")
+    input_ids = inputs.input_ids
+
+    # Generate output using the Mistral model
+    with torch.no_grad():
+        output = model.generate(input_ids, max_length=1024, num_return_sequences=1)
+
+    # Decode the output into text
+    output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+    # Split the output text into segments (assuming a structured output is returned)
+    segments = []  # Parse the output into segments based on your format requirements
+    current_segment = {}
+    for line in output_text.splitlines():
+        if line.startswith("Start Time:"):
+            if current_segment:
+                segments.append(current_segment)
+            current_segment = {"start_time": line.replace("Start Time:", "").strip()}
+        elif line.startswith("End Time:"):
+            current_segment["end_time"] = line.replace("End Time:", "").strip()
+        elif line.startswith("Text:"):
+            current_segment["text"] = line.replace("Text:", "").strip()
+    if current_segment:
+        segments.append(current_segment)
+
+    return segments
+
+
+
+
+
+
 
 # Step 4: Use GPT-4 to Determine Context-Based Segments
 def segment_transcription_with_gpt(transcription):
@@ -65,10 +123,10 @@ def segment_transcription_with_gpt(transcription):
     #     ]
     # )
 
-    prompt_tokens = len(tokenizer.encode(prompt))
-    print(" LEN OF TOKENS ", prompt_tokens)
-    if prompt_tokens > TOKEN_LIMIT:
-        print(f"Prompt token count ({prompt_tokens}) exceeds the limit ({TOKEN_LIMIT}). Truncating the text.")    
+    # prompt_tokens = len(tokenizer.encode(prompt))
+    # print(" LEN OF TOKENS ", prompt_tokens)
+    # if prompt_tokens > TOKEN_LIMIT:
+    #     print(f"Prompt token count ({prompt_tokens}) exceeds the limit ({TOKEN_LIMIT}). Truncating the text.")    
 
     response = client.chat.completions.create(
         messages=[
