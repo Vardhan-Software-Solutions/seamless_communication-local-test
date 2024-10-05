@@ -49,19 +49,21 @@ def segment_transcription_with_gpt(transcription):
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
         ]
     )
 
+    # Extract the generated content from the response
     segments_text = response['choices'][0]['message']['content']
     
     # Convert the response to a usable format (assuming it's a JSON-like output)
     import ast
-    segments = ast.literal_eval(segments_text)
+    try:
+        segments = ast.literal_eval(segments_text)
+    except (SyntaxError, ValueError) as e:
+        raise ValueError("The response format from GPT-4 could not be parsed. Please check the response for errors.")
 
     return segments
-
 # Step 1: Download MP4 File from S3 Using Boto3
 def download_from_s3(bucket_name, object_key, local_file):
     s3.download_file(bucket_name, object_key, local_file)
