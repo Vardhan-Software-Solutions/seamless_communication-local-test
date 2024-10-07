@@ -41,14 +41,17 @@ TOKEN_LIMIT = 4096
 s3 = boto3.client('s3')
 
 
-# Load Mistral or other open LLM model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
-model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+
 
 
 
 
 def segment_transcription_with_mistral(transcription):
+
+    # Load Mistral or other open LLM model and tokenizer
+    tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+    model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+
     text = transcription['text']
 
     # Create the prompt for Mistral-like LLM
