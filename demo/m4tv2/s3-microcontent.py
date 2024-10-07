@@ -264,8 +264,10 @@ def main():
     print(transcription)
 
     print("Segmenting the transcription using GPT-4...")
-    segments1 = segment_transcription_with_gpt(transcription)
-    print(" -------- CHATGPT ---------- ")
+    # segments1 = segment_transcription_with_gpt(transcription)
+
+    segments1 = segment_transcription_with_mistral(transcription)
+    print(" -------- MISTRAL ---------- ")
     print(segments1)
 
     # Step 4: Segment the transcription based on context
