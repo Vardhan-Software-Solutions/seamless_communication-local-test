@@ -20,7 +20,7 @@ local_mp4_path = "input.mp4"
 
 client = OpenAI(
     # This is the default and can be omitted
-    api_key=os.environ.get("OPENAI_API_KEY","AAA"),
+    api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
 
@@ -266,9 +266,9 @@ def main():
     print("Segmenting the transcription using GPT-4...")
     # segments1 = segment_transcription_with_gpt(transcription)
 
-    segments1 = segment_transcription_with_mistral(transcription)
-    print(" -------- MISTRAL ---------- ")
-    print(segments1)
+    # segments1 = segment_transcription_with_mistral(transcription)
+    # print(" -------- MISTRAL ---------- ")
+    # print(segments1)
 
     # Step 4: Segment the transcription based on context
     print("Segmenting the transcription based on context...")
