@@ -18,7 +18,7 @@ local_mp4_path = "input.mp4"
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 
-client = OpenAI(
+gptClient = OpenAI(
     # This is the default and can be omitted
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
@@ -131,7 +131,7 @@ def segment_transcription_with_gpt(transcription):
     # if prompt_tokens > TOKEN_LIMIT:
     #     print(f"Prompt token count ({prompt_tokens}) exceeds the limit ({TOKEN_LIMIT}). Truncating the text.")    
 
-    response = client.chat.completions.create(
+    response = gptClient.chat.completions.create(
         messages=[
             {
                 "role": "user",
