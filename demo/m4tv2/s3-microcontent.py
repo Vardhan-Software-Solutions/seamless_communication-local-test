@@ -131,15 +131,20 @@ def segment_transcription_with_gpt(transcription):
     # if prompt_tokens > TOKEN_LIMIT:
     #     print(f"Prompt token count ({prompt_tokens}) exceeds the limit ({TOKEN_LIMIT}). Truncating the text.")    
 
-    response = client.chat.completions.create(
-        messages=[
+    response = client.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
             {
-                "role": "user",
-                "content": prompt,
-            }
-            ],
-            model="gpt-3.5-turbo",
-        )
+                    "role": "user",
+                    "content": prompt,
+                }
+        ],
+    })
+        # messages=[
+            
+        #     ],
+        #     model="gpt-3.5-turbo",
+        # )
 
     print("response ", response)
     # Extract the generated content from the response
