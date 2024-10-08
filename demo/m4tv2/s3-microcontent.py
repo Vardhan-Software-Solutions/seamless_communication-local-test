@@ -276,17 +276,17 @@ def main():
 
     # Step 4: Segment the transcription based on context
     print("Segmenting the transcription based on context...")
-    segments = segment_transcription(transcription)
+    # segments = segment_transcription(transcription)
     print("SSSSSSSSSSSSSSSS")
-    print(segments)
+    # print(segments)
 
     # Step 5: Save each segment as a separate video file
     print("Saving each segment as a separate video file...")
-    # segment_files = save_segments(local_mp4_path, segments)
+    segment_files = save_segments(local_mp4_path, segments)
 
     # Step 6: Upload segments to S3
     print("Uploading segments to S3...")
-    # upload_segments_to_s3(s3_bucket_name, segment_files)
+    upload_segments_to_s3(s3_bucket_name, segment_files)
 
     # Clean up temporary audio file
     os.remove(audio_file)

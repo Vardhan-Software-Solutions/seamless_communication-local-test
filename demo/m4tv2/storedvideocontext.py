@@ -2,6 +2,8 @@
 # pip3 install boto3 openai-whisper ffmpeg-python sentence-transformers
 # pip3 install tiktoken
 # pip3 install transformers torch sentencepiece
+# pip3 install -U tokenizers
+# pip3 install transformers -U
 
 import subprocess
 import whisper
