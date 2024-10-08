@@ -1,3 +1,10 @@
+# pip3 install openai-whisper ffmpeg-python sentence-transformers numpy
+# pip3 install boto3 openai-whisper ffmpeg-python sentence-transformers
+# pip3 install tiktoken
+# pip3 install transformers torch sentencepiece
+# pip3 install -U tokenizers
+# pip3 install transformers -U
+# pip3 install datetime
 import subprocess
 import whisper
 import os
@@ -6,6 +13,7 @@ from openai import OpenAI
 import tiktoken
 import boto3
 from sentence_transformers import SentenceTransformer
+from datetime import datetime
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
@@ -216,12 +224,20 @@ def segment_transcription(transcription):
 
     return segmented_transcriptions
 
+# Utility function to convert "HH:MM:SS" time format to seconds
+def time_to_seconds(time_str):
+    """Convert a time string of format 'HH:MM:SS' to total seconds."""
+    time_obj = datetime.strptime(time_str, "%H:%M:%S")
+    total_seconds = time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
+    return total_seconds
+
+
 # Step 5: Save Each Segment as a Separate File
 def save_segments(input_video, segments):
     segment_files = []
     for i, segment in enumerate(segments):
-        start_time = float(segment["start_time"])  # Convert to float
-        end_time = float(segment["end_time"])  # Convert to float
+        start_time = time_to_seconds(segment["start_time"])
+        end_time = time_to_seconds(segment["end_time"])
         segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
         segment_files.append(segment_file)
 
