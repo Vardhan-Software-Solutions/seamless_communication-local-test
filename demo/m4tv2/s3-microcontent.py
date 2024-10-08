@@ -107,38 +107,38 @@ def segment_transcription_with_mistral(transcription):
 
 # Step 4: Use GPT-4 to Determine Context-Based Segments
 def segment_transcription_with_gpt(transcription):
-    # text = transcription['text']
+    text = transcription['text']
 
-    # # Create a prompt for GPT-4
-    # prompt = (
-    #     "The following is a transcription of a news broadcast. "
-    #     "Please divide the transcription into context-based segments. "
-    #     "Provide the segments in the following JSON-like format:\n\n"
-    #     "[\n"
-    #     "  {\n"
-    #     "    'start_time': start time of the segment,\n"
-    #     "    'end_time': end time of the segment,\n"
-    #     "    'text': 'transcribed text for this segment'\n"
-    #     "  },\n"
-    #     "  ...\n"
-    #     "]\n\n"
-    #     "Here is the transcription:\n"
-    #     f"{text}\n"
-    # )
+    # Create a prompt for GPT-4
+    prompt = (
+        "The following is a transcription of a news broadcast. "
+        "Please divide the transcription into context-based segments. "
+        "Provide the segments in the following JSON-like format:\n\n"
+        "[\n"
+        "  {\n"
+        "    'start_time': start time of the segment,\n"
+        "    'end_time': end time of the segment,\n"
+        "    'text': 'transcribed text for this segment'\n"
+        "  },\n"
+        "  ...\n"
+        "]\n\n"
+        "Here is the transcription:\n"
+        f"{text}\n"
+    )
 
 
-    segments = transcription['segments']  # Get the segments with timing info
+    # segments = transcription['segments']  # Get the segments with timing info
 
-    # Build a structured prompt including start/end times and text from Whisper
-    prompt = "The following is a transcription of a news broadcast. Please group the transcription into context-based segments. You will be given start and end times for each portion of the text. Group the segments by context, but retain the original start and end times. Provide the result in the following JSON format:\n\n"
+    # # Build a structured prompt including start/end times and text from Whisper
+    # prompt = "The following is a transcription of a news broadcast. Please group the transcription into context-based segments. You will be given start and end times for each portion of the text. Group the segments by context, but retain the original start and end times. Provide the result in the following JSON format:\n\n"
 
-    prompt += "[\n"
-    for segment in segments:
-        start_time = segment['start']  # Start time in seconds
-        end_time = segment.get('end', None)  # End time in seconds
-        text = segment['text']
-        prompt += f"  {{'start_time': {start_time}, 'end_time': {end_time}, 'text': '{text.strip()}'}},\n"
-    prompt += "]\n"
+    # prompt += "[\n"
+    # for segment in segments:
+    #     start_time = segment['start']  # Start time in seconds
+    #     end_time = segment.get('end', None)  # End time in seconds
+    #     text = segment['text']
+    #     prompt += f"  {{'start_time': {start_time}, 'end_time': {end_time}, 'text': '{text.strip()}'}},\n"
+    # prompt += "]\n"
 
 
     response = gptClient.chat.completions.create(
@@ -248,8 +248,68 @@ def time_to_seconds(time_str):
     return total_seconds
 
 
+
+def match_text_with_timing(gpt_segment_text, transcription_segments):
+    """
+    This function matches GPT-generated text with the transcription segments
+    from Whisper and returns the start and end time that best match the text.
+    """
+    # Initialize start and end times
+    matched_start_time = None
+    matched_end_time = None
+
+    # Loop over transcription segments
+    for trans_segment in transcription_segments:
+        trans_text = trans_segment['text'].strip()
+
+        # Check if GPT-generated text matches the transcription segment
+        if gpt_segment_text in trans_text or trans_text in gpt_segment_text:
+            # Match found, assign start and end times
+            matched_start_time = trans_segment['start']
+            matched_end_time = trans_segment['end']
+            break
+
+    return matched_start_time, matched_end_time
+
+def save_segments(input_video, gpt_segments, transcription_segments):
+    """
+    This function saves video segments based on the GPT-generated context-based
+    segments by matching them with the Whisper transcription's start and end times.
+    """
+    segment_files = []
+    for i, gpt_segment in enumerate(gpt_segments):
+        gpt_text = gpt_segment["text"].strip()  # GPT's generated text
+
+        # Match the GPT segment text with transcription timing
+        start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
+
+        if start_time is None or end_time is None:
+            print(f"Could not match GPT segment: {gpt_text}")
+            continue
+
+        segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
+        segment_files.append(segment_file)
+
+        # Define FFmpeg command to cut out the segment
+        command = [
+            "ffmpeg",
+            "-i", input_video,
+            "-ss", str(start_time)  # Start time in seconds
+        ]
+        if end_time is not None:
+            duration = end_time - start_time  # Calculate duration
+            command += ["-t", str(duration)]  # Duration in seconds
+
+        command += ["-c", "copy", segment_file]
+
+        # Run FFmpeg to extract the segment
+        subprocess.run(command, check=True)
+        print(f"Saved segment: {segment_file}")
+
+    return segment_files
+    
 # Step 5: Save Each Segment as a Separate File
-def save_segments(input_video, segments):
+def save_segmentsOLD(input_video, segments):
     segment_files = []
     for i, segment in enumerate(segments):
         start_time = time_to_seconds(segment["start_time"])
