@@ -226,9 +226,23 @@ def segment_transcription(transcription):
 
 # Utility function to convert "HH:MM:SS" time format to seconds
 def time_to_seconds(time_str):
-    """Convert a time string of format 'HH:MM:SS' to total seconds."""
-    time_obj = datetime.strptime(time_str, "%H:%M:%S")
-    total_seconds = time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
+    """Convert time string of format 'HH:MM:SS' or 'MM:SS' or 'H:MM' to total seconds."""
+    time_parts = time_str.split(':')
+
+    if len(time_parts) == 3:
+        # Time format is HH:MM:SS
+        hours, minutes, seconds = time_parts
+        total_seconds = int(hours) * 3600 + int(minutes) * 60 + int(seconds)
+    elif len(time_parts) == 2:
+        # Time format is MM:SS or H:MM
+        minutes, seconds = time_parts
+        total_seconds = int(minutes) * 60 + int(seconds)
+    elif len(time_parts) == 1:
+        # Time format is SS (only seconds)
+        total_seconds = int(time_parts[0])
+    else:
+        raise ValueError(f"Unrecognized time format: {time_str}")
+
     return total_seconds
 
 
