@@ -107,37 +107,39 @@ def segment_transcription_with_mistral(transcription):
 
 # Step 4: Use GPT-4 to Determine Context-Based Segments
 def segment_transcription_with_gpt(transcription):
-    text = transcription['text']
+    # text = transcription['text']
 
-    # Create a prompt for GPT-4
-    prompt = (
-        "The following is a transcription of a news broadcast. "
-        "Please divide the transcription into context-based segments. "
-        "Provide the segments in the following JSON-like format:\n\n"
-        "[\n"
-        "  {\n"
-        "    'start_time': start time of the segment,\n"
-        "    'end_time': end time of the segment,\n"
-        "    'text': 'transcribed text for this segment'\n"
-        "  },\n"
-        "  ...\n"
-        "]\n\n"
-        "Here is the transcription:\n"
-        f"{text}\n"
-    )
-
-    # Use OpenAI API to get context-based segments
-    # response = openai.ChatCompletion.create(
-    #     model="gpt-4",
-    #     messages=[
-    #         {"role": "user", "content": prompt}
-    #     ]
+    # # Create a prompt for GPT-4
+    # prompt = (
+    #     "The following is a transcription of a news broadcast. "
+    #     "Please divide the transcription into context-based segments. "
+    #     "Provide the segments in the following JSON-like format:\n\n"
+    #     "[\n"
+    #     "  {\n"
+    #     "    'start_time': start time of the segment,\n"
+    #     "    'end_time': end time of the segment,\n"
+    #     "    'text': 'transcribed text for this segment'\n"
+    #     "  },\n"
+    #     "  ...\n"
+    #     "]\n\n"
+    #     "Here is the transcription:\n"
+    #     f"{text}\n"
     # )
 
-    # prompt_tokens = len(tokenizer.encode(prompt))
-    # print(" LEN OF TOKENS ", prompt_tokens)
-    # if prompt_tokens > TOKEN_LIMIT:
-    #     print(f"Prompt token count ({prompt_tokens}) exceeds the limit ({TOKEN_LIMIT}). Truncating the text.")    
+
+    segments = transcription['segments']  # Get the segments with timing info
+
+    # Build a structured prompt including start/end times and text from Whisper
+    prompt = "The following is a transcription of a news broadcast. Please group the transcription into context-based segments. You will be given start and end times for each portion of the text. Group the segments by context, but retain the original start and end times. Provide the result in the following JSON format:\n\n"
+
+    prompt += "[\n"
+    for segment in segments:
+        start_time = segment['start']  # Start time in seconds
+        end_time = segment.get('end', None)  # End time in seconds
+        text = segment['text']
+        prompt += f"  {{'start_time': {start_time}, 'end_time': {end_time}, 'text': '{text.strip()}'}},\n"
+    prompt += "]\n"
+
 
     response = gptClient.chat.completions.create(
         messages=[
