@@ -307,7 +307,7 @@ def save_segments(input_video, gpt_segments, transcription_segments):
         print(f"Saved segment: {segment_file}")
 
     return segment_files
-    
+
 # Step 5: Save Each Segment as a Separate File
 def save_segmentsOLD(input_video, segments):
     segment_files = []
@@ -374,9 +374,10 @@ def main():
     # print("SSSSSSSSSSSSSSSS")
     # print(segments)
 
+    transcription_segments = transcription['segments']
     # Step 5: Save each segment as a separate video file
     print("Saving each segment as a separate video file...")
-    segment_files = save_segments(local_mp4_path, segments)
+    segment_files = save_segments(local_mp4_path, segments,transcription_segments)
 
     # Step 6: Upload segments to S3
     print("Uploading segments to S3...")
