@@ -144,7 +144,7 @@ def segment_transcription_with_gpt(transcription):
 
     print("response ", response)
     # Extract the generated content from the response
-    segments_text = response.choices[0].message['content']
+    segments_text = response.choices[0].message.content
     
     # Convert the response to a usable format (assuming it's a JSON-like output)
     import ast
