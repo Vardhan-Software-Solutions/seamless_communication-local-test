@@ -220,8 +220,8 @@ def segment_transcription(transcription):
 def save_segments(input_video, segments):
     segment_files = []
     for i, segment in enumerate(segments):
-        start_time = segment["start_time"]
-        end_time = segment["end_time"]
+        start_time = float(segment["start_time"])  # Convert to float
+        end_time = float(segment["end_time"])  # Convert to float
         segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
         segment_files.append(segment_file)
 
