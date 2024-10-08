@@ -135,8 +135,8 @@ def segment_transcription_with_gpt(transcription):
         messages=[
             {
                 "role": "user",
-                # "content": prompt,
-                "content": "Hello!"
+                "content": prompt,
+                # "content": "Hello!"
             }
             ],
             model="gpt-3.5-turbo",
