@@ -270,11 +270,11 @@ def main():
     print(transcription)
 
     print("Segmenting the transcription using GPT-4...")
-    segments1 = segment_transcription_with_gpt(transcription)
+    segments = segment_transcription_with_gpt(transcription)
 
     # segments1 = segment_transcription_with_mistral(transcription)
     # print(" -------- MISTRAL ---------- ")
-    print(segments1)
+    print(segments)
 
     # Step 4: Segment the transcription based on context
     # print("Segmenting the transcription based on context...")
