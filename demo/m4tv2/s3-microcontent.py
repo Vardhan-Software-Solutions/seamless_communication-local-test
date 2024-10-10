@@ -5,9 +5,12 @@
 # pip3 install -U tokenizers
 # pip3 install transformers -U
 # pip3 install datetime
+# pip3 install re
+
 import subprocess
 import whisper
 import os
+import re
 import numpy as np
 from openai import OpenAI
 import tiktoken
@@ -34,7 +37,7 @@ gptClient = OpenAI(
 
 
 # Load Whisper model and SentenceTransformer model
-whisper_model = whisper.load_model("base")
+whisper_model = whisper.load_model("small.en")
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Set output directory for segments
@@ -247,9 +250,119 @@ def time_to_seconds(time_str):
 
     return total_seconds
 
+def match_text_with_first_second_timing(second_array, first_array):
+    # Create an empty list to store the results
+    matched_segments = []
+
+    # Iterate over second array
+    for second in second_array:
+        # Clean the text of the second array element
+        clean_second_text = clean_text(second["text"])
+        
+        # Initialize variables to track start and end time
+        first_occurrence_start = None
+        last_occurrence_end = None
+        
+        # Iterate over first array
+        for first in first_array:
+            # Clean the text of the first array element
+            clean_first_text = clean_text(first["text"])
+            
+            # Check if any part of the cleaned second array's text matches cleaned first array's text
+            if clean_second_text.find(clean_first_text) != -1 or clean_first_text.find(clean_second_text) != -1:
+                # If it's the first match, set the start time
+                if first_occurrence_start is None:
+                    first_occurrence_start = first["start"]
+                # Update the end time with the last match's end time
+                last_occurrence_end = first["end"]
+        
+        # If a match is found, add it to the results
+        if first_occurrence_start is not None and last_occurrence_end is not None:
+            matched_segments.append({
+                "start": first_occurrence_start,  # Start of the first occurrence
+                "end": last_occurrence_end,      # End of the last occurrence
+                "text": second["text"]
+            })
+
+    # Print or return the matched segments
+    print(matched_segments)
+    return matched_segments
 
 
-def match_text_with_timing(gpt_segment_text, transcription_segments):
+
+def clean_text(text):
+    """
+    Function to preprocess the text by removing punctuation and converting to lowercase.
+    """
+    return re.sub(r'[^a-zA-Z\s]', '', text).lower()
+
+def match_text_with_timing(gpt_text, transcription_segments):
+    """
+    Matches GPT text with transcription segments and aggregates the start and end times.
+    """
+    cleaned_gpt_text = clean_text(gpt_text)
+    first_occurrence_start = None
+    last_occurrence_end = None
+
+    for transcription in transcription_segments:
+        cleaned_transcription_text = clean_text(transcription["text"])
+
+        # Check if the cleaned GPT text matches any part of the transcription text
+        if cleaned_gpt_text.find(cleaned_transcription_text) != -1 or cleaned_transcription_text.find(cleaned_gpt_text) != -1:
+            if first_occurrence_start is None:
+                first_occurrence_start = transcription["start"]
+            last_occurrence_end = transcription["end"]
+
+    return first_occurrence_start, last_occurrence_end
+
+def save_segments(input_video, gpt_segments, transcription_segments, output_dir):
+    """
+    This function saves video segments based on the GPT-generated context-based
+    segments by matching them with the Whisper transcription's start and end times.
+    """
+    segment_files = []
+
+    # Ensure the output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    for i, gpt_segment in enumerate(gpt_segments):
+        gpt_text = gpt_segment["text"].strip()  # GPT's generated text
+
+        # Match the GPT segment text with transcription timing and aggregate start/end times
+        start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
+
+        # If no match found, continue to the next GPT segment
+        if start_time is None or end_time is None:
+            print(f"Could not match GPT segment: {gpt_text}")
+            continue
+
+        segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
+        segment_files.append(segment_file)
+
+        # Define FFmpeg command to cut out the segment
+        command = [
+            "ffmpeg",
+            "-i", input_video,
+            "-ss", str(start_time)  # Start time in seconds
+        ]
+
+        # Calculate the duration and add to the FFmpeg command
+        duration = end_time - start_time
+        command += ["-t", str(duration)]  # Duration in seconds
+
+        command += ["-c", "copy", segment_file]
+
+        # Run FFmpeg to extract the segment
+        try:
+            subprocess.run(command, check=True)
+            print(f"Saved segment: {segment_file}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error extracting segment {i + 1}: {e}")
+
+    return segment_files
+
+def match_text_with_timingOLD(gpt_segment_text, transcription_segments):
     """
     This function matches GPT-generated text with the transcription segments
     from Whisper and returns the start and end time that best match the text.
@@ -271,7 +384,10 @@ def match_text_with_timing(gpt_segment_text, transcription_segments):
 
     return matched_start_time, matched_end_time
 
-def save_segments(input_video, gpt_segments, transcription_segments):
+def save_identified_segmentsOld(input_video, gpt_segments, transcription_segments):
+    matched_segments = match_text_with_first_second_timing(gpt_segments, transcription_segments)
+
+def save_segmentsOld(input_video, gpt_segments, transcription_segments):
     """
     This function saves video segments based on the GPT-generated context-based
     segments by matching them with the Whisper transcription's start and end times.
@@ -281,7 +397,8 @@ def save_segments(input_video, gpt_segments, transcription_segments):
         gpt_text = gpt_segment["text"].strip()  # GPT's generated text
 
         # Match the GPT segment text with transcription timing
-        start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
+        # start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
+        # start_time, end_time = match_text_with_first_second_timing(gpt_text, transcription_segments)
 
         if start_time is None or end_time is None:
             print(f"Could not match GPT segment: {gpt_text}")
@@ -377,6 +494,7 @@ def main():
     transcription_segments = transcription['segments']
     # Step 5: Save each segment as a separate video file
     print("Saving each segment as a separate video file...")
+    finalSegments = 
     segment_files = save_segments(local_mp4_path, segments,transcription_segments)
 
     # Step 6: Upload segments to S3
