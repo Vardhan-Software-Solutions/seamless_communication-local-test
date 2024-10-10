@@ -315,7 +315,7 @@ def match_text_with_timing(gpt_text, transcription_segments):
 
     return first_occurrence_start, last_occurrence_end
 
-def save_segments(input_video, gpt_segments, transcription_segments, output_dir):
+def save_segments(input_video, gpt_segments, transcription_segments):
     """
     This function saves video segments based on the GPT-generated context-based
     segments by matching them with the Whisper transcription's start and end times.
