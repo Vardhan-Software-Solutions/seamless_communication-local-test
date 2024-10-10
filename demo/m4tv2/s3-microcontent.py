@@ -37,7 +37,7 @@ gptClient = OpenAI(
 
 
 # Load Whisper model and SentenceTransformer model
-whisper_model = whisper.load_model("small.en")
+whisper_model = whisper.load_model("turbo")
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Set output directory for segments
