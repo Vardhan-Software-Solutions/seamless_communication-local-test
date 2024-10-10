@@ -494,7 +494,7 @@ def main():
     transcription_segments = transcription['segments']
     # Step 5: Save each segment as a separate video file
     print("Saving each segment as a separate video file...")
-    finalSegments = 
+    
     segment_files = save_segments(local_mp4_path, segments,transcription_segments)
 
     # Step 6: Upload segments to S3
