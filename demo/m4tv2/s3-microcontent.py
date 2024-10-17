@@ -179,6 +179,16 @@ def extract_audio(input_file, output_audio, duration=60):
     command = [
         "ffmpeg",
         "-i", input_file,
+        "-t", str(duration),  # Duration of extraction
+        "-vn",  # No video
+        "-acodec", "libmp3lame",  # Use MP3 codec
+        "-b:a", "64k",  # Audio bitrate (can go as low as 32k for smaller files)
+        "-ar", "16000",  # Sample rate
+        "-ac", "1",  # Mono channel
+    ]
+    command1 = [
+        "ffmpeg",
+        "-i", input_file,
           "-t", str(duration),  # Duration of extraction (1 minute)
         "-vn",  # No video
         "-acodec", "pcm_s16le",  # Convert to PCM
@@ -466,7 +476,7 @@ def main():
     # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
-    audio_file = "output_min.wav"
+    audio_file = "output_min.mp3"
 
     # Step 2: Extract audio from MP4
     print("Extracting audio from MP4...")
