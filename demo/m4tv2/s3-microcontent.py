@@ -388,70 +388,70 @@ def match_text_with_timingOLD(gpt_segment_text, transcription_segments):
 def save_identified_segmentsOld(input_video, gpt_segments, transcription_segments):
     matched_segments = match_text_with_first_second_timing(gpt_segments, transcription_segments)
 
-def save_segmentsOld(input_video, gpt_segments, transcription_segments):
-    """
-    This function saves video segments based on the GPT-generated context-based
-    segments by matching them with the Whisper transcription's start and end times.
-    """
-    segment_files = []
-    for i, gpt_segment in enumerate(gpt_segments):
-        gpt_text = gpt_segment["text"].strip()  # GPT's generated text
+# def save_segmentsOld(input_video, gpt_segments, transcription_segments):
+#     """
+#     This function saves video segments based on the GPT-generated context-based
+#     segments by matching them with the Whisper transcription's start and end times.
+#     """
+#     segment_files = []
+#     for i, gpt_segment in enumerate(gpt_segments):
+#         gpt_text = gpt_segment["text"].strip()  # GPT's generated text
 
-        # Match the GPT segment text with transcription timing
-        # start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
-        # start_time, end_time = match_text_with_first_second_timing(gpt_text, transcription_segments)
+#         # Match the GPT segment text with transcription timing
+#         # start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
+#         # start_time, end_time = match_text_with_first_second_timing(gpt_text, transcription_segments)
 
-        if start_time is None or end_time is None:
-            print(f"Could not match GPT segment: {gpt_text}")
-            continue
+#         if start_time is None or end_time is None:
+#             print(f"Could not match GPT segment: {gpt_text}")
+#             continue
 
-        segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
-        segment_files.append(segment_file)
+#         segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
+#         segment_files.append(segment_file)
 
-        # Define FFmpeg command to cut out the segment
-        command = [
-            "ffmpeg",
-            "-i", input_video,
-            "-ss", str(start_time)  # Start time in seconds
-        ]
-        if end_time is not None:
-            duration = end_time - start_time  # Calculate duration
-            command += ["-t", str(duration)]  # Duration in seconds
+#         # Define FFmpeg command to cut out the segment
+#         command = [
+#             "ffmpeg",
+#             "-i", input_video,
+#             "-ss", str(start_time)  # Start time in seconds
+#         ]
+#         if end_time is not None:
+#             duration = end_time - start_time  # Calculate duration
+#             command += ["-t", str(duration)]  # Duration in seconds
 
-        command += ["-c", "copy", segment_file]
+#         command += ["-c", "copy", segment_file]
 
-        # Run FFmpeg to extract the segment
-        subprocess.run(command, check=True)
-        print(f"Saved segment: {segment_file}")
+#         # Run FFmpeg to extract the segment
+#         subprocess.run(command, check=True)
+#         print(f"Saved segment: {segment_file}")
 
-    return segment_files
+#     return segment_files
 
-# Step 5: Save Each Segment as a Separate File
-def save_segmentsOLD(input_video, segments):
-    segment_files = []
-    for i, segment in enumerate(segments):
-        start_time = time_to_seconds(segment["start_time"])
-        end_time = time_to_seconds(segment["end_time"])
-        segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
-        segment_files.append(segment_file)
+# # Step 5: Save Each Segment as a Separate File
+# def save_segmentsOLD(input_video, segments):
+#     segment_files = []
+#     for i, segment in enumerate(segments):
+#         start_time = time_to_seconds(segment["start_time"])
+#         end_time = time_to_seconds(segment["end_time"])
+#         segment_file = os.path.join(output_dir, f"segment_{i + 1}.mp4")
+#         segment_files.append(segment_file)
 
-        # Define FFmpeg command to cut out the segment
-        command = [
-            "ffmpeg",
-            "-i", input_video,
-            "-ss", str(start_time)  # Start time
-        ]
-        if end_time is not None:
-            duration = end_time - start_time
-            command += ["-t", str(duration)]  # Duration
+#         # Define FFmpeg command to cut out the segment
+#         command = [
+#             "ffmpeg",
+#             "-i", input_video,
+#             "-ss", str(start_time)  # Start time
+#         ]
+#         if end_time is not None:
+#             duration = end_time - start_time
+#             command += ["-t", str(duration)]  # Duration
 
-        command += ["-c", "copy", segment_file]
+#         command += ["-c", "copy", segment_file]
 
-        # Run FFmpeg to extract the segment
-        subprocess.run(command, check=True)
-        print(f"Saved segment: {segment_file}")
+#         # Run FFmpeg to extract the segment
+#         subprocess.run(command, check=True)
+#         print(f"Saved segment: {segment_file}")
 
-    return segment_files
+#     return segment_files
 
 # Step 6: Upload Segments to S3 Using Boto3
 def upload_segments_to_s3(bucket_name, segment_files):
@@ -464,7 +464,7 @@ def upload_segments_to_s3(bucket_name, segment_files):
 def main():
     # Step 1: Download the MP4 file from S3
     print("Downloading MP4 file from S3...")
-    # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
+    download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
     audio_file = "output_min_1.mp3"
@@ -482,21 +482,13 @@ def main():
 
     
     # print("Segmenting the transcription using GPT-4...")
-    # segments = segment_transcription_with_gpt(transcription)
-
-    # print(segments)
-
+    segments = segment_transcription_with_gpt(transcription)
+    print(segments)
     # transcription_segments = transcription['segments']
-    
     # print("Saving each segment as a separate video file...")
-    
     # segment_files = save_segments(local_mp4_path, segments,transcription_segments)
-
-    
     # print("Uploading segments to S3...")
     # upload_segments_to_s3(s3_bucket_name, segment_files)
-
-    
     os.remove(audio_file)
 
 if __name__ == "__main__":
