@@ -479,30 +479,24 @@ def main():
     print("Transcribing---------------")
     print(transcription)
 
-    print("Segmenting the transcription using GPT-4...")
-    segments = segment_transcription_with_gpt(transcription)
 
-    # segments1 = segment_transcription_with_mistral(transcription)
-    # print(" -------- MISTRAL ---------- ")
-    print(segments)
+    
+    # print("Segmenting the transcription using GPT-4...")
+    # segments = segment_transcription_with_gpt(transcription)
 
-    # Step 4: Segment the transcription based on context
-    # print("Segmenting the transcription based on context...")
-    # segments = segment_transcription(transcription)
-    # print("SSSSSSSSSSSSSSSS")
     # print(segments)
 
-    transcription_segments = transcription['segments']
-    # Step 5: Save each segment as a separate video file
-    print("Saving each segment as a separate video file...")
+    # transcription_segments = transcription['segments']
     
-    segment_files = save_segments(local_mp4_path, segments,transcription_segments)
+    # print("Saving each segment as a separate video file...")
+    
+    # segment_files = save_segments(local_mp4_path, segments,transcription_segments)
 
-    # Step 6: Upload segments to S3
-    print("Uploading segments to S3...")
-    upload_segments_to_s3(s3_bucket_name, segment_files)
+    
+    # print("Uploading segments to S3...")
+    # upload_segments_to_s3(s3_bucket_name, segment_files)
 
-    # Clean up temporary audio file
+    
     os.remove(audio_file)
 
 if __name__ == "__main__":
