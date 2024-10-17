@@ -467,7 +467,7 @@ def main():
     # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
-    audio_file = "output_min.mp3"
+    audio_file = "output_min_1.mp3"
 
     # Step 2: Extract audio from MP4
     print("Extracting audio from MP4...")
