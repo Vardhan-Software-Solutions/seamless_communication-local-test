@@ -175,6 +175,7 @@ def extract_audio(input_file, output_audio, duration=60):
         "-b:a", "64k",  # Audio bitrate (can go as low as 32k for smaller files)
         "-ar", "16000",  # Sample rate
         "-ac", "1",  # Mono channel
+         output_audio
     ]
     command1 = [
         "ffmpeg",
