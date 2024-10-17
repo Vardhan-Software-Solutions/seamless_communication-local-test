@@ -114,18 +114,8 @@ def segment_transcription_with_gpt(transcription):
 
     # Create a prompt for GPT-4
     prompt = (
-        "The following is a transcription of a news broadcast. "
-        "Please divide the transcription into context-based segments. "
-        "Provide the segments in the following JSON-like format:\n\n"
-        "[\n"
-        "  {\n"
-        "    'start_time': start time of the segment,\n"
-        "    'end_time': end time of the segment,\n"
-        "    'text': 'transcribed text for this segment'\n"
-        "  },\n"
-        "  ...\n"
-        "]\n\n"
-        "Here is the transcription:\n"
+       "Persona: You work as an intern for a news agency Context: You are responsible for splitting a large text containing several disparate news segments into smaller individual and continuous text segments. Task: Identify each change in context to a new topic in the provided text. Output Format: 1. A list of each individual change in context, each representing a new news segment.2. For each segment, provide:a. Title – A concise title for the segment.b. Starting Point – The point in the transcript where the segment begins.c. Summary – A brief description summarizing the content of the segment. d. HashTags - whatever possible hashtags that can be created "
+       "Here is the transcription:\n"
         f"{text}\n"
     )
 
