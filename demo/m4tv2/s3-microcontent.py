@@ -4,6 +4,9 @@
 # pip3 install transformers torch sentencepiece
 # pip3 install -U tokenizers
 # pip3 install transformers -U
+
+# pip3 install openai-whisper ffmpeg-python boto3 datetime re
+# pip3 install boto3
 # pip3 install datetime
 # pip3 install re
 
@@ -11,15 +14,15 @@ import subprocess
 import whisper
 import os
 import re
-import numpy as np
+# import numpy as np
 from openai import OpenAI
-import tiktoken
+# import tiktoken
 import boto3
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 from datetime import datetime
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
+# from transformers import AutoTokenizer, AutoModelForCausalLM
+# import torch
 
 
 # AWS S3 configuration
@@ -198,40 +201,40 @@ def transcribe_audio(audio_file):
     return result
 
 # Step 4: Segment Transcription Based on Context
-def segment_transcription(transcription):
-    segments = transcription['segments']
-    sentences = [segment['text'] for segment in segments]
-    start_times = [segment['start'] for segment in segments]
+# def segment_transcription(transcription):
+#     segments = transcription['segments']
+#     sentences = [segment['text'] for segment in segments]
+#     start_times = [segment['start'] for segment in segments]
 
-    # Calculate embeddings for each sentence
-    embeddings = embedding_model.encode(sentences)
+#     # Calculate embeddings for each sentence
+#     embeddings = embedding_model.encode(sentences)
 
-    # Identify context changes based on embedding similarity
-    context_boundaries = [0]  # Start with the first sentence
-    threshold = 0.7  # Similarity threshold to determine if context has shifted
+#     # Identify context changes based on embedding similarity
+#     context_boundaries = [0]  # Start with the first sentence
+#     threshold = 0.7  # Similarity threshold to determine if context has shifted
 
-    for i in range(1, len(embeddings)):
-        similarity = np.dot(embeddings[i - 1], embeddings[i]) / (np.linalg.norm(embeddings[i - 1]) * np.linalg.norm(embeddings[i]))
-        if similarity < threshold:
-            context_boundaries.append(i)
+#     for i in range(1, len(embeddings)):
+#         similarity = np.dot(embeddings[i - 1], embeddings[i]) / (np.linalg.norm(embeddings[i - 1]) * np.linalg.norm(embeddings[i]))
+#         if similarity < threshold:
+#             context_boundaries.append(i)
 
-    # Create segments based on context boundaries
-    segmented_transcriptions = []
-    for i in range(len(context_boundaries)):
-        start_idx = context_boundaries[i]
-        end_idx = context_boundaries[i + 1] if i + 1 < len(context_boundaries) else len(sentences)
+#     # Create segments based on context boundaries
+#     segmented_transcriptions = []
+#     for i in range(len(context_boundaries)):
+#         start_idx = context_boundaries[i]
+#         end_idx = context_boundaries[i + 1] if i + 1 < len(context_boundaries) else len(sentences)
 
-        segment_text = " ".join(sentences[start_idx:end_idx])
-        start_time = start_times[start_idx]
-        end_time = start_times[end_idx - 1] if end_idx - 1 < len(start_times) else None
+#         segment_text = " ".join(sentences[start_idx:end_idx])
+#         start_time = start_times[start_idx]
+#         end_time = start_times[end_idx - 1] if end_idx - 1 < len(start_times) else None
 
-        segmented_transcriptions.append({
-            "start_time": start_time,
-            "end_time": end_time,
-            "text": segment_text
-        })
+#         segmented_transcriptions.append({
+#             "start_time": start_time,
+#             "end_time": end_time,
+#             "text": segment_text
+#         })
 
-    return segmented_transcriptions
+#     return segmented_transcriptions
 
 # Utility function to convert "HH:MM:SS" time format to seconds
 def time_to_seconds(time_str):
