@@ -57,50 +57,50 @@ s3 = boto3.client('s3')
 
 
 
-def segment_transcription_with_mistral(transcription):
+# def segment_transcription_with_mistral(transcription):
 
-    # Load Mistral or other open LLM model and tokenizer
-    tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
-    model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+#     # Load Mistral or other open LLM model and tokenizer
+#     tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+#     model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
 
-    text = transcription['text']
+#     text = transcription['text']
 
-    # Create the prompt for Mistral-like LLM
-    prompt = (
-        "The following is a transcription of a news broadcast. "
-        "Please divide the transcription into context-based segments. "
-        "Provide the segments in a structured format:\n\n"
-        f"{text}\n"
-        "Divide the above transcription into distinct topics and provide structured segments."
-    )
+#     # Create the prompt for Mistral-like LLM
+#     prompt = (
+#         "The following is a transcription of a news broadcast. "
+#         "Please divide the transcription into context-based segments. "
+#         "Provide the segments in a structured format:\n\n"
+#         f"{text}\n"
+#         "Divide the above transcription into distinct topics and provide structured segments."
+#     )
 
-    # Tokenize the prompt
-    inputs = tokenizer(prompt, return_tensors="pt")
-    input_ids = inputs.input_ids
+#     # Tokenize the prompt
+#     inputs = tokenizer(prompt, return_tensors="pt")
+#     input_ids = inputs.input_ids
 
-    # Generate output using the Mistral model
-    with torch.no_grad():
-        output = model.generate(input_ids, max_length=1024, num_return_sequences=1)
+#     # Generate output using the Mistral model
+#     with torch.no_grad():
+#         output = model.generate(input_ids, max_length=1024, num_return_sequences=1)
 
-    # Decode the output into text
-    output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+#     # Decode the output into text
+#     output_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
-    # Split the output text into segments (assuming a structured output is returned)
-    segments = []  # Parse the output into segments based on your format requirements
-    current_segment = {}
-    for line in output_text.splitlines():
-        if line.startswith("Start Time:"):
-            if current_segment:
-                segments.append(current_segment)
-            current_segment = {"start_time": line.replace("Start Time:", "").strip()}
-        elif line.startswith("End Time:"):
-            current_segment["end_time"] = line.replace("End Time:", "").strip()
-        elif line.startswith("Text:"):
-            current_segment["text"] = line.replace("Text:", "").strip()
-    if current_segment:
-        segments.append(current_segment)
+#     # Split the output text into segments (assuming a structured output is returned)
+#     segments = []  # Parse the output into segments based on your format requirements
+#     current_segment = {}
+#     for line in output_text.splitlines():
+#         if line.startswith("Start Time:"):
+#             if current_segment:
+#                 segments.append(current_segment)
+#             current_segment = {"start_time": line.replace("Start Time:", "").strip()}
+#         elif line.startswith("End Time:"):
+#             current_segment["end_time"] = line.replace("End Time:", "").strip()
+#         elif line.startswith("Text:"):
+#             current_segment["text"] = line.replace("Text:", "").strip()
+#     if current_segment:
+#         segments.append(current_segment)
 
-    return segments
+#     return segments
 
 
 
@@ -169,7 +169,7 @@ def extract_audio(input_file, output_audio, duration=60):
     command = [
         "ffmpeg",
         "-i", input_file,
-        "-t", str(duration),  # Duration of extraction
+        # "-t", str(duration),  # Duration of extraction
         "-vn",  # No video
         "-acodec", "libmp3lame",  # Use MP3 codec
         "-b:a", "64k",  # Audio bitrate (can go as low as 32k for smaller files)
@@ -177,16 +177,16 @@ def extract_audio(input_file, output_audio, duration=60):
         "-ac", "1",  # Mono channel
          output_audio
     ]
-    command1 = [
-        "ffmpeg",
-        "-i", input_file,
-          "-t", str(duration),  # Duration of extraction (1 minute)
-        "-vn",  # No video
-        "-acodec", "pcm_s16le",  # Convert to PCM
-        "-ar", "16000",  # Sample rate
-        "-ac", "1",  # Mono channel
-        output_audio
-    ]
+    # command1 = [
+    #     "ffmpeg",
+    #     "-i", input_file,
+    #       "-t", str(duration),  # Duration of extraction (1 minute)
+    #     "-vn",  # No video
+    #     "-acodec", "pcm_s16le",  # Convert to PCM
+    #     "-ar", "16000",  # Sample rate
+    #     "-ac", "1",  # Mono channel
+    #     output_audio
+    # ]
     subprocess.run(command, check=True)
 
 # Step 3: Transcribe Audio Using Whisper
