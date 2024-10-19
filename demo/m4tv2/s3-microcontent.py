@@ -473,8 +473,8 @@ def main():
     transcription_segments = transcription['segments']
     print("Saving each segment as a separate video file...")
     segment_files = save_segments(local_mp4_path, segments,transcription_segments)
-    # print("Uploading segments to S3...")
-    # upload_segments_to_s3(s3_bucket_name, segment_files)
+    print("Uploading segments to S3...")
+    upload_segments_to_s3(s3_bucket_name, segment_files)
     os.remove(audio_file)
 
 if __name__ == "__main__":
