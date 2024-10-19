@@ -157,7 +157,7 @@ def segment_transcription_with_gpt(transcription):
     content = json.loads(content1)
     
 
-    print("response-segments-text::  ", segments_text)
+    print("response-segments-text::  ", content.segments)
 
     # # Convert the response to a usable format (assuming it's a JSON-like output)
     # import ast
