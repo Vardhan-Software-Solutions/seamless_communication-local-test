@@ -122,21 +122,6 @@ def segment_transcription_with_gpt(transcription):
         f"{text}\n"
     )
 
-
-    # segments = transcription['segments']  # Get the segments with timing info
-
-    # # Build a structured prompt including start/end times and text from Whisper
-    # prompt = "The following is a transcription of a news broadcast. Please group the transcription into context-based segments. You will be given start and end times for each portion of the text. Group the segments by context, but retain the original start and end times. Provide the result in the following JSON format:\n\n"
-
-    # prompt += "[\n"
-    # for segment in segments:
-    #     start_time = segment['start']  # Start time in seconds
-    #     end_time = segment.get('end', None)  # End time in seconds
-    #     text = segment['text']
-    #     prompt += f"  {{'start_time': {start_time}, 'end_time': {end_time}, 'text': '{text.strip()}'}},\n"
-    # prompt += "]\n"
-
-
     response = gptClient.chat.completions.create(
         messages=[
             {
@@ -149,24 +134,10 @@ def segment_transcription_with_gpt(transcription):
             response_format={ "type": "json_object" }
         )
 
-    # print("response ", response)
-    # Extract the generated content from the response
-    # segments_text = response.choices[0].message.content
-
     content1 = response.choices[0].message.content
     content = json.loads(content1)
-    
-
     print("\n response-segments-text::  ", content['segments'])
-
-    # # Convert the response to a usable format (assuming it's a JSON-like output)
-    # import ast
-    # try:
-    #     segments = ast.literal_eval(segments_text)
-    # except (SyntaxError, ValueError) as e:
-    #     raise ValueError("The response format from GPT could not be parsed. Please check the response for errors.")
-
-    return []
+    return content['segments']
 
 
 # Step 1: Download MP4 File from S3 Using Boto3
