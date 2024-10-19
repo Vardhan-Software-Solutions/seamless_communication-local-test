@@ -183,7 +183,7 @@ def time_to_seconds(time_str):
 #     return matched_segments
 
 
-def get_start_end_time(item1,array2)
+def get_start_end_time(item1,array2):
     start_pos = None
     end_pos = None
         
