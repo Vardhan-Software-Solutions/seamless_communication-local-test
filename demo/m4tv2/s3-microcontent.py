@@ -157,7 +157,7 @@ def segment_transcription_with_gpt(transcription):
     content = json.loads(content1)
     
 
-    print("response-segments-text::  ", content)
+    print("\n response-segments-text::  ", content['segments'])
 
     # # Convert the response to a usable format (assuming it's a JSON-like output)
     # import ast
@@ -474,7 +474,7 @@ def upload_segments_to_s3(bucket_name, segment_files):
 def main():
     # Step 1: Download the MP4 file from S3
     print("Downloading MP4 file from S3...")
-    download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
+    # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
     audio_file = "output_min_1.mp3"
