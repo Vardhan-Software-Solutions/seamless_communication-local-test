@@ -41,7 +41,7 @@ gptClient = OpenAI(
 
 # Load Whisper model and SentenceTransformer model
 whisper_model = whisper.load_model("turbo")
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+# embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Set output directory for segments
 output_dir = "news_segments"
@@ -145,24 +145,28 @@ def segment_transcription_with_gpt(transcription):
                 # "content": "Hello!"
             }
             ],
-            model="gpt-4",
+            model="gpt-4o",
+            response_format={ "type": "json_object" }
         )
 
-    print("response ", response)
+    # print("response ", response)
     # Extract the generated content from the response
-    segments_text = response.choices[0].message.content
+    # segments_text = response.choices[0].message.content
+
+    content1 = response.choices[0].message.content
+    content = json.loads(content1)
     
 
     print("response-segments-text::  ", segments_text)
 
-    # Convert the response to a usable format (assuming it's a JSON-like output)
-    import ast
-    try:
-        segments = ast.literal_eval(segments_text)
-    except (SyntaxError, ValueError) as e:
-        raise ValueError("The response format from GPT could not be parsed. Please check the response for errors.")
+    # # Convert the response to a usable format (assuming it's a JSON-like output)
+    # import ast
+    # try:
+    #     segments = ast.literal_eval(segments_text)
+    # except (SyntaxError, ValueError) as e:
+    #     raise ValueError("The response format from GPT could not be parsed. Please check the response for errors.")
 
-    return segments
+    return content.segments
 
 
 # Step 1: Download MP4 File from S3 Using Boto3
