@@ -157,7 +157,7 @@ def segment_transcription_with_gpt(transcription):
     content = json.loads(content1)
     
 
-    print("response-segments-text::  ", content.segments)
+    print("response-segments-text::  ", content)
 
     # # Convert the response to a usable format (assuming it's a JSON-like output)
     # import ast
@@ -166,7 +166,7 @@ def segment_transcription_with_gpt(transcription):
     # except (SyntaxError, ValueError) as e:
     #     raise ValueError("The response format from GPT could not be parsed. Please check the response for errors.")
 
-    return content.segments
+    return []
 
 
 # Step 1: Download MP4 File from S3 Using Boto3
