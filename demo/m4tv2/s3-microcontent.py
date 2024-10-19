@@ -198,7 +198,7 @@ def get_start_end_time(item1,array2):
             end_pos = item2["end"]
             break
 
-return start_pos, end_pos
+    return start_pos, end_pos
 
 
 def find_start_end(array1, array2):
