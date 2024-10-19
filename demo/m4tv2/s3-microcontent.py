@@ -68,10 +68,10 @@ def segment_transcription_with_gpt(transcription):
        "2. For each segment, provide:\n"
        "a. title – A concise title for the segment.\n"
        "b. startText – The point in the transcript where the segment begins.\n"
-       "c. endText – The point in the transcript where the segment ends.\n"
-       "d. description – A brief description summarizing the content of the segment."
-       "e. hashTags - whatever possible hashtags that can be created "
-        "f. text: Actual Full Text without any changes "
+    #    "c. endText – The point in the transcript where the segment ends.\n"
+       "c. description – A brief description summarizing the content of the segment."
+       "d. hashTags - whatever possible hashtags that can be created "
+       "e. text: Actual Full Text without any changes "
         "Provide the result only in valid JSON format\n"
         f"{text}\n"
     )
@@ -144,44 +144,49 @@ def time_to_seconds(time_str):
 
     return total_seconds
 
-# def match_text_with_first_second_timing(second_array, first_array):
-#     # Create an empty list to store the results
-#     matched_segments = []
 
-#     # Iterate over second array
-#     for second in second_array:
-#         # Clean the text of the second array element
-#         clean_second_text = clean_text(second["text"])
-        
-#         # Initialize variables to track start and end time
-#         first_occurrence_start = None
-#         last_occurrence_end = None
-        
-#         # Iterate over first array
-#         for first in first_array:
-#             # Clean the text of the first array element
-#             clean_first_text = clean_text(first["text"])
-            
-#             # Check if any part of the cleaned second array's text matches cleaned first array's text
-#             if clean_second_text.find(clean_first_text) != -1 or clean_first_text.find(clean_second_text) != -1:
-#                 # If it's the first match, set the start time
-#                 if first_occurrence_start is None:
-#                     first_occurrence_start = first["start"]
-#                 # Update the end time with the last match's end time
-#                 last_occurrence_end = first["end"]
-        
-#         # If a match is found, add it to the results
-#         if first_occurrence_start is not None and last_occurrence_end is not None:
-#             matched_segments.append({
-#                 "start": first_occurrence_start,  # Start of the first occurrence
-#                 "end": last_occurrence_end,      # End of the last occurrence
-#                 "text": second["text"]
-#             })
 
-#     # Print or return the matched segments
-#     print(matched_segments)
-#     return matched_segments
+def process_array1(array1, array2):
+    result = []
 
+    for i in range(len(array1) - 1):  # Loop through array1 but stop one item before the end
+        current_item = array1[i]
+        next_item = array1[i + 1]
+
+        # Find the start time and index for the current startText
+        current_start_time, current_index = get_start_and_index(current_item["startText"], array2)
+
+        # Find the start time and index for the next startText
+        next_start_time, next_index = get_start_and_index(next_item["startText"], array2)
+
+        # Set the end time of the current item based on the previous item of the next match
+        end_time = None
+        if next_index is not None and next_index > 0:
+            end_time = array2[next_index - 1]["end"]  # Use the end time of the previous item in array2
+
+        # Append the current item to the result
+        result.append({
+            "startText": current_item["startText"],
+            "hashTags": last_item["hashTags"],
+            "title": last_item["title"],
+            "description": current_item["description"],
+            "start": current_start_time,
+            "end": end_time  # End time derived from the item before the next match
+        })
+
+    # For the last item in array1 (it has no "next" to determine end, so leave end as None)
+    last_item = array1[-1]
+    last_start_time, _, endTime = get_start_and_index_and_end(last_item["startText"], array2)
+    result.append({
+        "startText": last_item["startText"],
+        "hashTags": last_item["hashTags"],
+        "title": last_item["title"],
+        "description": last_item["description"],
+        "start": last_start_time,
+        "end": endTime  # No next item to determine end time
+    })
+
+    return result
 
 def get_start_end_time(item1,array2):
     start_pos = None
@@ -199,6 +204,20 @@ def get_start_end_time(item1,array2):
             break
 
     return start_pos, end_pos
+
+
+# Function to find start time and the index of the matched item in array2
+def get_start_and_index(start_text, array2):
+    for index, item in enumerate(array2):
+        if clean_text(start_text).strip() == clean_text(item["text"]).strip():
+            return item["start"], index
+    return None, None  # Return None if not found
+
+def get_start_and_index_and_end(start_text, array2):
+    for index, item in enumerate(array2):
+        if clean_text(start_text).strip() == clean_text(item["text"]).strip():
+            return item["start"], index , item["end"]
+    return None, None  # Return None if not found
 
 
 def find_start_end(array1, array2):
@@ -246,24 +265,7 @@ def clean_text(text):
     """
     return re.sub(r'[^a-zA-Z\s]', '', text).lower()
 
-# def match_text_with_timing(gpt_text, transcription_segments):
-#     """
-#     Matches GPT text with transcription segments and aggregates the start and end times.
-#     """
-#     cleaned_gpt_text = clean_text(gpt_text)
-#     first_occurrence_start = None
-#     last_occurrence_end = None
 
-#     for transcription in transcription_segments:
-#         cleaned_transcription_text = clean_text(transcription["text"])
-
-#         # Check if the cleaned GPT text matches any part of the transcription text
-#         if cleaned_gpt_text.find(cleaned_transcription_text) != -1 or cleaned_transcription_text.find(cleaned_gpt_text) != -1:
-#             if first_occurrence_start is None:
-#                 first_occurrence_start = transcription["start"]
-#             last_occurrence_end = transcription["end"]
-
-#     return first_occurrence_start, last_occurrence_end
 
 def save_segments(input_video, gpt_segments, transcription_segments):
     """
@@ -276,12 +278,14 @@ def save_segments(input_video, gpt_segments, transcription_segments):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    for i, gpt_segment in gpt_segments:
+    final_segments = process_array1(gpt_segments,transcription_segments)
+    # for i, gpt_segment in gpt_segments:
+    for i, gpt_segment in final_segments:        
         # gpt_text = gpt_segment["text"].strip()  # GPT's generated text
 
-        # Match the GPT segment text with transcription timing and aggregate start/end times
-        # start_time, end_time = match_text_with_timing(gpt_text, transcription_segments)
-        start_time, end_time = get_start_end_time(gpt_segment,transcription_segments)
+        start_time = gpt_segment.start
+        end_time = gpt_segment.end
+        
 
         # If no match found, continue to the next GPT segment
         if start_time is None or end_time is None:
