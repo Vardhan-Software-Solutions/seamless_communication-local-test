@@ -66,7 +66,12 @@ def segment_transcription_with_gpt(transcription):
        "Task: Identify each change in context to a new topic in the provided text. \n"
        "Output Format: \n"
        "1. A list of each individual change in context, each representing a new news segment.\n"
-       "2. For each segment, provide:a. Title – A concise title for the segment.b. Starting Point – The point in the transcript where the segment begins.c. Summary – A brief description summarizing the content of the segment. d. HashTags - whatever possible hashtags that can be created e. text: Actual Full Text without any changes "
+       "2. For each segment, provide:\n"
+       "a. title – A concise title for the segment.\n"
+       "b. startText – The point in the transcript where the segment begins.\n"
+       "c. description – A brief description summarizing the content of the segment."
+       "d. hashTags - whatever possible hashtags that can be created "
+        "e. text: Actual Full Text without any changes "
         "Provide the result only in valid JSON format\n"
         f"{text}\n"
     )
@@ -75,8 +80,7 @@ def segment_transcription_with_gpt(transcription):
         messages=[
             {
                 "role": "user",
-                "content": prompt,
-                # "content": "Hello!"
+                "content": prompt
             }
             ],
             model="gpt-4o",
@@ -85,8 +89,11 @@ def segment_transcription_with_gpt(transcription):
 
     content1 = response.choices[0].message.content
     content = json.loads(content1)
-    print("\n response-segments-text::  ", content['segments'])
-    return content['segments']
+    chatSegments = response.choices[0].message.content
+    if 'segments' in content:
+        chatSegments = content['segments']
+    print("\n response-segments-text:: \n\n\n ", chatSegments)
+    return chatSegments
 
 
 # Step 1: Download MP4 File from S3 Using Boto3
@@ -308,9 +315,9 @@ def main():
     print("final segments from GPT ",segments)
     transcription_segments = transcription['segments']
     print("Saving each segment as a separate video file...")
-    segment_files = save_segments(local_mp4_path, segments,transcription_segments)
+    # segment_files = save_segments(local_mp4_path, segments,transcription_segments)
     print("Uploading segments to S3...")
-    upload_segments_to_s3(s3_bucket_name, segment_files)
+    # upload_segments_to_s3(s3_bucket_name, segment_files)
     os.remove(audio_file)
 
 if __name__ == "__main__":
