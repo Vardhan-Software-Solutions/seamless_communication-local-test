@@ -26,14 +26,16 @@ def break_audio_by_silence(audio_file, silence_threshold='-50dB', silence_durati
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # FFmpeg command to detect silence and split audio based on silence
+    # Remove '-c copy' and let FFmpeg encode the output correctly after applying filters
     silence_command = f"""
-    ffmpeg -i {audio_file} -af silencedetect=n={silence_threshold}:d={silence_duration} -f segment -segment_times silence -c copy {output_folder}/chunk_%03d.mp3
+    ffmpeg -i {audio_file} -af silencedetect=n={silence_threshold}:d={silence_duration},apad -f segment -segment_times silence -c:a libmp3lame {output_folder}/chunk_%03d.mp3
     """
+    
     os.system(silence_command)
     
     # Collect all generated chunk files
     return [f"{output_folder}/{f}" for f in os.listdir(output_folder) if f.endswith('.mp3')]
+
 
 # Function to break a large audio chunk into smaller files based on file size
 def break_audio_by_size(audio_file, max_size_mb=10, output_folder='audio_chunks_by_size'):
