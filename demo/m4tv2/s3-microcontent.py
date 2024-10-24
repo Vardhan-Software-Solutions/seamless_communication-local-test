@@ -354,7 +354,7 @@ def upload_segments_to_s3(bucket_name, segment_files):
 def main():
     # Step 1: Download the MP4 file from S3
     print("Downloading MP4 file from S3...")
-    # download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
+    download_from_s3(s3_bucket_name, s3_object_key, local_mp4_path)
 
     # Define paths
     audio_file = "output_min_1.mp3"
@@ -363,23 +363,23 @@ def main():
     print("Extracting audio from MP4...")
     extract_audio(local_mp4_path, audio_file)
 
-    # Step 3: Transcribe audio using Whisper
-    print("Transcribing audio using Whisper...")
-    transcription = transcribe_audio(audio_file)
-    print("Transcribing---------------")
-    print(transcription)
+    # # Step 3: Transcribe audio using Whisper
+    # print("Transcribing audio using Whisper...")
+    # transcription = transcribe_audio(audio_file)
+    # print("Transcribing---------------")
+    # print(transcription)
 
 
     
-    # print("Segmenting the transcription using GPT-4...")
-    segments = segment_transcription_with_gpt(transcription)
-    print("final segments from GPT ",segments)
-    transcription_segments = transcription['segments']
-    print("Saving each segment as a separate video file...")
-    # segment_files = save_segments(local_mp4_path, segments,transcription_segments)
-    print("Uploading segments to S3...")
-    # upload_segments_to_s3(s3_bucket_name, segment_files)
-    os.remove(audio_file)
+    # # print("Segmenting the transcription using GPT-4...")
+    # segments = segment_transcription_with_gpt(transcription)
+    # print("final segments from GPT ",segments)
+    # transcription_segments = transcription['segments']
+    # print("Saving each segment as a separate video file...")
+    # # segment_files = save_segments(local_mp4_path, segments,transcription_segments)
+    # print("Uploading segments to S3...")
+    # # upload_segments_to_s3(s3_bucket_name, segment_files)
+    # os.remove(audio_file)
 
 if __name__ == "__main__":
     main()
